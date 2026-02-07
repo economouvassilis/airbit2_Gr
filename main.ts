@@ -800,7 +800,7 @@ namespace airbit {
         }
     }
     input.onGesture(Gesture.ScreenDown, function () {
-        stable = 0
+        stable = false
     })
 
 
