@@ -3,8 +3,8 @@
  * Ελληνικό Πρόσθετο για το Air:bit 2
  */
 
-// Ορισμός των Enums ΕΚΤΟΣ namespace για να τα "βλέπει" το MakeCode αμέσως
-enum MoveDir {
+// Enums με αγγλικά ονόματα για μέγιστη συμβατότητα
+enum MoveDirection {
     //% block="Μπροστά"
     Forward,
     //% block="Πίσω"
@@ -15,7 +15,7 @@ enum MoveDir {
     Down
 }
 
-enum TurnDir {
+enum TurnDirection {
     //% block="Δεξιά"
     Right,
     //% block="Αριστερά"
@@ -26,7 +26,7 @@ enum TurnDir {
 namespace airbit2_GR {
 
     //% block="Αρχικοποίηση"
-    export function αρχικοποίηση() {
+    export function initialize() {
         airbit.IMU_Start()
         basic.pause(100)
         airbit.PCA_Start()
@@ -36,7 +36,7 @@ namespace airbit2_GR {
     }
 
     //% block="Απογείωση"
-    export function απογείωση() {
+    export function takeOff() {
         arm = 1
         for (let i = 0; i <= 65; i++) {
             throttle = i
@@ -45,7 +45,7 @@ namespace airbit2_GR {
     }
 
     //% block="Προσγείωση"
-    export function προσγείωση() {
+    export function land() {
         for (let i = throttle; i >= 0; i--) {
             throttle = i
             basic.pause(30)
@@ -55,20 +55,18 @@ namespace airbit2_GR {
         basic.showIcon(IconNames.No)
     }
 
-    /**
-     * Κίνηση - Χρήση % για το combo box
-     */
-    //% block="Κινήσου %κατεύθυνση για %cm εκατοστά"
-    //% cm.defl=50
-    export function κίνηση(κατεύθυνση: MoveDir, cm: number) {
-        let ms = cm * 25;
-        if (κατεύθυνση == MoveDir.Forward) {
+    // Χρήση αγγλικών παραμέτρων (dir, distance) για να δουλέψει το combo box
+    //% block="Κινήσου %dir για %distance εκατοστά"
+    //% distance.defl=50
+    export function move(dir: MoveDirection, distance: number) {
+        let ms = distance * 25;
+        if (dir == MoveDirection.Forward) {
             pitch = -10
-        } else if (κατεύθυνση == MoveDir.Backward) {
+        } else if (dir == MoveDirection.Backward) {
             pitch = 10
-        } else if (κατεύθυνση == MoveDir.Up) {
+        } else if (dir == MoveDirection.Up) {
             throttle += 10
-        } else if (κατεύθυνση == MoveDir.Down) {
+        } else if (dir == MoveDirection.Down) {
             throttle -= 10
         }
         basic.pause(ms)
@@ -76,23 +74,20 @@ namespace airbit2_GR {
         throttle = Math.constrain(throttle, 0, 100)
     }
 
-    /**
-     * Στροφή - Χρήση % για το combo box
-     */
-    //% block="Στρίψε %στροφή %μοίρες μοίρες"
-    //% μοίρες.min=0 μοίρες.max=360
-    export function στροφή(στροφή: TurnDir, μοίρες: number) {
-        let στροφή_ms = μοίρες * 5;
-        if (στροφή == TurnDir.Right) {
-            yaw += μοίρες
+    //% block="Στρίψε %turnDir %degrees μοίρες"
+    //% degrees.min=0 degrees.max=360
+    export function turn(turnDir: TurnDirection, degrees: number) {
+        let turn_ms = degrees * 5;
+        if (turnDir == TurnDirection.Right) {
+            yaw += degrees
         } else {
-            yaw -= μοίρες
+            yaw -= degrees
         }
-        basic.pause(στροφή_ms)
+        basic.pause(turn_ms)
     }
 
     //% block="Προβολή Πληροφοριών"
-    export function προβολήΠληροφοριών() {
+    export function showInfo() {
         basic.clearScreen()
         airbit.smartBar(4, airbit.batteryLevel())
         let ledX = Math.map(imuRoll, -15, 15, 0, 4)
@@ -101,7 +96,7 @@ namespace airbit2_GR {
     }
 
     //% block="Επίπεδο Μπαταρίας"
-    export function ποσοστόΜπαταρίας(): number {
+    export function batteryPercentage(): number {
         return airbit.batteryLevel()
     }
 }
