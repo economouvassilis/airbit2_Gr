@@ -4,9 +4,9 @@
  */
 
 
-//METABLHTES
 
-// --- ΜΕΤΑΒΛΗΤΕΣ (Χωρίς export για αποφυγή σφάλματος) ---
+
+// ----------- ΜΕΤΑΒΛΗΤΕΣ  ---------
 
 let yaw = 0
 let radioReceivedTime = 0
@@ -35,7 +35,7 @@ let mcExists = false
 let batteryVolt = 0
 let imuYaw = 0
 let baroExists = false
-// --- ΤΕΛΟΣ ΜΕΤΑΒΛΗΤΩΝ ---
+
 
 let imuPitch: number
 let imuRoll: number
@@ -833,6 +833,16 @@ namespace airbit {
 
 
 
+
+
+
+
+
+
+
+
+
+
 /**
  * Βασίλης Οικονόμου 7/2/2023
  * Ελληνικό Πρόσθετο για το Air:bit 2
@@ -980,7 +990,8 @@ namespace airbit2_GR {
         throttle = Math.constrain(throttle, 45, 100)
         
         // Ενημέρωση χρόνου για να μην την αλλάξει το failsafe του main.ts
-        last_radio_time = control.millis() 
+        //last_radio_time = control.millis() 
+        radioReceivedTime= control.millis()
         
         // Άμεση εφαρμογή στα μοτέρ
         airbit.stabilisePid() 
@@ -1041,6 +1052,16 @@ namespace airbit2_GR {
         return airbit.batteryLevel()
     }
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
