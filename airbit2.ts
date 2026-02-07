@@ -1,221 +1,403 @@
 /**
- * Βασίλης Οικονόμου 7/2/2023
- * Ελληνικό Πρόσθετο για το Air:bit 2
+ * Air:bit 2 - Πλήρες Κεντρικό Αρχείο (Συνδυασμένο)
+ * Διατηρεί όλες τις αυθεντικές λειτουργίες και ενσωματώνει τις ελληνικές εντολές.
  */
 
-enum MoveDirection {
-    //% block="Μπροστά"
-    Forward,
-    //% block="Πίσω"
-    Backward,
-    //% block="Πάνω"
-    Up,
-    //% block="Κάτω"
-    Down
+function servo1_test () {
+    pins.digitalWritePin(DigitalPin.P1, 1)
+    control.waitMicros(1500 + roll * 10)
+    pins.digitalWritePin(DigitalPin.P1, 0)
 }
-
-enum TurnDirection {
-    //% block="Δεξιά"
-    Right,
-    //% block="Αριστερά"
-    Left
-}
-
-
-
-enum ThrottleAction {
-    //% block="Αύξηση"
-    Increase,
-    //% block="Μείωση"
-    Decrease
-}
-
-
-
-// Δηλώσεις εξωτερικών μεταβλητών για να μην βγάζει λάθη το MakeCode
-declare let throttle: number;
-declare let arm: number;
-declare let last_radio_time: number;
-declare let motorTesting: boolean;
-declare let imuRoll: number;
-declare let imuPitch: number;
-declare let yaw: number;
-declare let pitch: number;
-
-
-
-
-
-//% weight=100 color=#00AEEF icon="\uf140" block="AirBit Ελληνικά"
-namespace airbit2_GR {
-
-    //% block="Αρχικοποίηση"
-    export function initialize() {
-        airbit.IMU_Start()
-        basic.pause(100)
-        airbit.PCA_Start()
-        basic.pause(100)
-        airbit.IMU_gyro_calibrate()
-        basic.showIcon(IconNames.Happy)
+function JoystickDeadBand () {
+    if (Math.abs(roll) < 5) {
+        roll = 0
     }
-
-    /**
-     * Σβήνει ακαριαία όλα τα μοτέρ και αφοπλίζει το drone.
-     */
-    //% block="Επείγουσα Διακοπή"
-    //% color=#ff0000
-    export function emergencyStop() {
-        arm = 0 // Θέτει τη μεταβλητή arm σε 0 ακαριαία
-        throttle = 0 // Μηδενίζει την ισχύ
-        airbit.MotorSpeed(0, 0, 0, 0) // Στέλνει εντολή στα μοτέρ να σταματήσουν
-        basic.showIcon(IconNames.No)
+    if (Math.abs(pitch) < 5) {
+        pitch = 0
     }
-
-
-    /**
-    * ΑΠΟΓΕΙΩΣΗ
-    */
-    //% block="Απογείωση στα %targetHeight εκατοστά"
-    //% targetHeight.defl=100
-    export function takeOff(targetHeight: number) {
-        arm = 1
-        // 1. Σταδιακή άνοδος μέχρι το σημείο αποκόλλησης
-        for (let i = 0; i <= 65; i++) {
-            throttle = i
-            basic.pause(30) 
+}
+function screen () {
+    if (pins.analogReadPin(AnalogPin.P0) > 780) {
+        if (pins.analogReadPin(AnalogPin.P0) > 950) {
+            basic.showIcon(IconNames.Yes)
+            basic.showString("Charging finished!")
+        } else {
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                . # . # .
+                . # . # .
+                . # # # .
+                `)
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                . # . # .
+                . # # # .
+                . # # # .
+                `)
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                . # # # .
+                . # # # .
+                . # # # .
+                `)
         }
-        
-        // 2. ΙΣΧΥΡΗ ΩΘΗΣΗ: Ανεβάζουμε στο 83 για να σιγουρέψουμε την άνοδο
-        throttle = 83 
-        
-        // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ: Αυξάνουμε τον πολλαπλασιαστή στο 30 για το 1 μέτρο
-        let risingTime = targetHeight * 30 
-        basic.pause(risingTime)
-        
-        // 4. ΚΡΑΤΗΜΑ (Hover): Μένουμε στο 67 για να μην πέσει
-        throttle = 67 
-        basic.showIcon(IconNames.Yes)
-    }
-
-
-    //% block="Προσγείωση από τα %currentHeight εκατοστά"
-    export function land(currentHeight: number) {
-        // Κατεβαίνουμε σταδιακά από το hover (66) στο 50
-        for (let j = 66; j >= 50; j--) {
-            throttle = j
-            basic.pause(currentHeight * 2) // Χρόνος καθόδου ανάλογα με το ύψος
+    } else {
+        if (mode == 0) {
+            // ΕΔΩ Η ΑΛΛΑΓΗ: Αντικατάσταση του dots() με την ελληνική προβολή
+            airbit2_GR.showInfo()
         }
-        arm = 0
-        airbit.MotorSpeed(0, 0, 0, 0)
-    }   
-
-
-    /**
-     * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
-     * Συγκεντρώνει τις εντολές: IMU_sensorRead, calculateAngles και stabilisePid.
-     */
-    //% block="Σταθεροποίηση"
-    export function stabilization() {
-        // Διάβασμα αισθητήρων
+        if (mode == 1) {
+            led.plotBarGraph(
+            airbit.batteryLevel(),
+            100
+            )
+        }
+        if (mode == 2) {
+            basic.showNumber(airbit.batterymVolt())
+        }
+        if (mode == 3) {
+            basic.showNumber(pins.analogReadPin(AnalogPin.P0))
+        }
+        if (mode == 4) {
+            basic.showNumber(throttle)
+        }
+        if (mode == 5) {
+            motorTest()
+        }
+        if (mode == 6) {
+            basic.clearScreen()
+            motorLed()
+        }
+    }
+}
+function mainLoop () {
+    while (true) {
+        /*
+        // Read raw data from gyro and accelerometer
         airbit.IMU_sensorRead()
-        // Υπολογισμός γωνιών
+        // Find drone's absolute Roll, Pitch and Yaw angles with sensor fusion, gyro and accelerometer together.
         airbit.calculateAngles()
-        // Σταθεροποίηση PID αν δεν είμαστε σε λειτουργία τεστ μοτέρ
+        */
+        airbit2_GR.stabilization()
+       
+       
+        basic.pause(1)
+        lostSignalCheck()
         if (motorTesting == false) {
+            // The "magic" algorithm that stabilises the drone based on setpoint angle and actual angle, finding the difference and chanring motor speed to compensate.
             airbit.stabilisePid()
         }
-    }
-
-
-    /**
-     * Ορίζει την ισχύ των μοτέρ (ταχύτητα) σε μια συγκεκριμένη τιμή.
-     * @param speed Η επιθυμητή ταχύτητα από 0 έως 100
-     */
-    //% block="Όρισε ταχύτητα σε %speed"
-    //% speed.min=0 speed.max=100
-    export function targetThrottle(speed: number) {
-        // Θέτουμε τη μεταβλητή throttle απευθείας στην τιμή που θέλουμε
-        throttle = speed
-        
-        // Περιορισμός τιμής μεταξύ 0 και 100 για απόλυτη ασφάλεια
-        throttle = Math.constrain(throttle, 0, 100)
-    }
-
-
-/**
-     * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
-     */
-    //% block="Ταχύτητα %action κατά %amount"
-    //% amount.min=0 amount.max=100
-    export function setThrottle(action: ThrottleAction, amount: number) {
-        if (action == ThrottleAction.Increase) {
-            throttle = throttle + amount
-        } else if (action == ThrottleAction.Decrease) {
-            throttle = throttle - amount
+        // If upside down while armed, disable flying
+        if (Math.abs(imuRoll) > 90 && arm) {
+            stable = false
         }
-        
-        // Ασφάλεια: Περιορισμός τιμής
-        throttle = Math.constrain(throttle, 45, 100)
-        
-        // Ενημέρωση χρόνου για να μην την αλλάξει το failsafe του main.ts
-        last_radio_time = control.millis() 
-        
-        // Άμεση εφαρμογή στα μοτέρ
-        airbit.stabilisePid() 
-    }
-
-
-    /**
-     * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
-     */
-    //% block="Τρέχουσα ταχύτητα"
-    export function getCurrentThrottle(): number {
-        return throttle
-    }
-
-
-
-    //% block="Κινήσου %dir για %distance εκατοστά"
-    //% distance.defl=50
-    export function move(dir: MoveDirection, distance: number) {
-        let ms = distance * 25;
-        if (dir == MoveDirection.Forward) {
-            pitch = -10
-        } else if (dir == MoveDirection.Backward) {
-            pitch = 10
-        } else if (dir == MoveDirection.Up) {
-            throttle += 10
-        } else if (dir == MoveDirection.Down) {
-            throttle -= 10
-        }
-        basic.pause(ms)
-        pitch = 0
-        throttle = Math.constrain(throttle, 0, 100)
-    }
-
-    //% block="Στρίψε %turnDir %degrees μοίρες"
-    //% degrees.min=0 degrees.max=360
-    export function turn(turnDir: TurnDirection, degrees: number) {
-        let turn_ms = degrees * 5;
-        if (turnDir == TurnDirection.Right) {
-            yaw += degrees
+        // Only start motors if armed, stable, motor controller and gyro is operating
+        if (arm && stable && (mcExists && gyroExists)) {
+            if (throttle == 0) {
+                // Idle speed of motors
+                airbit.MotorSpeed(
+                5,
+                5,
+                5,
+                5
+                )
+            } else {
+                airbit.MotorSpeed(
+                motorA,
+                motorB,
+                motorC,
+                motorD
+                )
+            }
         } else {
-            yaw -= degrees
+            // Clear registers for error compensation algorithms, do not keep errors from past flight.
+            airbit.cleanReg()
+            if (motorTesting) {
+                airbit.MotorSpeed(
+                motorA,
+                motorB,
+                motorC,
+                motorD
+                )
+            } else {
+                airbit.MotorSpeed(
+                0,
+                0,
+                0,
+                0
+                )
+            }
         }
-        basic.pause(turn_ms)
-    }
-
-    //% block="Προβολή Πληροφοριών"
-    export function showInfo() {
-        basic.clearScreen()
-        airbit.smartBar(4, airbit.batteryLevel())
-        let ledX = Math.map(imuRoll, -15, 15, 0, 4)
-        let ledY = Math.map(imuPitch, -15, 15, 4, 0)
-        led.plot(ledX, ledY)
-    }
-
-    //% block="Επίπεδο Μπαταρίας"
-    export function batteryPercentage(): number {
-        return airbit.batteryLevel()
+        cpuTime = input.runningTime() - startTime
+        startTime = input.runningTime()
     }
 }
+input.onButtonPressed(Button.A, function () {
+    mode += -1
+    if (mode < 0) {
+        mode = 6
+    }
+})
+function radioSendData () {
+    radio.sendValue("p", rollPitchP)
+    radio.sendValue("i", rollPitchI)
+    radio.sendValue("d", rollPitchD)
+    radio.sendValue("t", radioReceivedTime)
+    radio.sendValue("R2", roll)
+    radio.sendValue("yp", yawP)
+    radio.sendValue("yd", yawD)
+    radio.sendValue("v", batterymVoltSmooth)
+    radio.sendValue("p0", pins.analogReadPin(AnalogPin.P0))
+    basic.pause(5000)
+}
+function gyroAccBubble () {
+	
+}
+input.onButtonPressed(Button.AB, function () {
+    mode = 0
+})
+input.onButtonPressed(Button.B, function () {
+    mode += 1
+    if (mode > 6) {
+        mode = 0
+    }
+})
+function motorLed () {
+    basic.clearScreen()
+    led.plotBrightness(0, 4, motorA)
+    led.plotBrightness(0, 0, motorB)
+    led.plotBrightness(4, 4, motorC)
+    led.plotBrightness(4, 0, motorD)
+    led.plot(Math.map(imuRoll, -15, 15, 0, 4), Math.map(imuPitch, -15, 15, 4, 0))
+}
+radio.onReceivedValue(function (name, value) {
+    radioReceivedTime = input.runningTime()
+    if (name == "P") {
+        pitch = expo(value) / -3
+        pitch = Math.constrain(pitch, -15, 15)
+    }
+    if (name == "A") {
+        arm = value
+    }
+    if (name == "R") {
+        roll = expo(value) / 3
+        roll = Math.constrain(roll, -15, 15)
+    }
+    if (name == "T") {
+        throttle = value
+        throttle = Math.constrain(throttle, 0, 100)
+        if (batterymVoltSmooth < 3400) {
+            throttle = Math.constrain(throttle, 0, 75)
+        }
+    }
+    if (name == "Y") {
+        yaw += value * 0.1
+    }
+})
+// smartBar(0, throttle)
+// smartBar(4, airbit.batteryLevel())
+function dots () {
+    basic.clearScreen()
+    led.plot(Math.map(roll, -15, 15, 0, 4), Math.map(pitch, -15, 15, 4, 0))
+    led.plot(Math.map(yaw, -30, 30, 0, 4), 4)
+    if (arm) {
+        led.plot(0, 0)
+    }
+    airbit.smartBar(0, throttle)
+    airbit.smartBar(4, airbit.batteryLevel())
+}
+function lostSignalCheck () {
+    // Failsafe makes only sense if already flying
+    if (throttle > 65 && arm) {
+        if (input.runningTime() > radioReceivedTime + 3000) {
+            roll = 0
+            pitch = 0
+            yaw = 0
+            throttle = 65
+        }
+        if (input.runningTime() > radioReceivedTime + 8000) {
+            roll = 0
+            pitch = 0
+            yaw = 0
+            throttle = 0
+            arm = 0
+        }
+    }
+}
+function motorTest () {
+    motorA = 0
+    motorB = 0
+    motorC = 0
+    motorD = 0
+    motorTesting = true
+    motorB = 5
+    for (let index = 0; index < 50; index++) {
+        basic.clearScreen()
+        airbit.rotateDot(
+        1,
+        1,
+        1,
+        10
+        )
+        basic.pause(20)
+    }
+    motorB = 0
+    motorD = 5
+    for (let index = 0; index < 50; index++) {
+        basic.clearScreen()
+        airbit.rotateDot(
+        3,
+        1,
+        1,
+        -10
+        )
+        basic.pause(20)
+    }
+    motorD = 0
+    motorC = 5
+    for (let index = 0; index < 50; index++) {
+        basic.clearScreen()
+        airbit.rotateDot(
+        3,
+        3,
+        1,
+        10
+        )
+        basic.pause(20)
+    }
+    motorC = 0
+    motorA = 5
+    for (let index = 0; index < 50; index++) {
+        basic.clearScreen()
+        airbit.rotateDot(
+        1,
+        3,
+        1,
+        -10
+        )
+        basic.pause(20)
+    }
+    motorA = 0
+    motorTesting = false
+}
+function expo (inp: number) {
+    if (inp >= 0) {
+        return inp / expoSetting + inp * inp / expoFactor
+    } else {
+        return inp / expoSetting - inp * inp / expoFactor
+    }
+}
+
+// --- ΜΕΤΑΒΛΗΤΕΣ (Χωρίς export για αποφυγή σφάλματος) ---
+
+let yaw = 0
+let radioReceivedTime = 0
+let startTime = 0
+let cpuTime = 0
+let motorTesting = false
+let throttle = 0
+let mode = 0
+let pitch = 0
+let roll = 0
+let arm = 0
+let expoFactor = 0
+let expoSetting = 0
+let motorD = 0
+let motorB = 0
+let motorC = 0
+let motorA = 0
+let yawD = 0
+let yawP = 0
+let rollPitchD = 0
+let rollPitchI = 0
+let rollPitchP = 0
+let batterymVoltSmooth = 0
+let imuRoll = 0
+let imuPitch = 0
+let stable = false
+let gyroExists = false
+let mcExists = false
+let batteryVolt = 0
+let imuYaw = 0
+let baroExists = false
+// --- ΤΕΛΟΣ ΜΕΤΑΒΛΗΤΩΝ ---
+
+// --- INITIALIZATION ---
+mcExists = false
+gyroExists = false
+stable = true
+let radioGroup = 7
+imuPitch = 0
+imuRoll = 0
+batterymVoltSmooth = 3700
+rollPitchP = 0.9
+rollPitchI = 0.004
+rollPitchD = 15
+yawP = 5
+yawD = 70
+motorA = 0
+motorC = 0
+motorB = 0
+motorD = 0
+expoSetting = 2
+expoFactor = 45 * 45 / (45 - 45 / expoSetting)
+
+radio.setGroup(radioGroup)
+i2crr.setI2CPins(DigitalPin.P2, DigitalPin.P1)
+basic.pause(100)
+
+// Καλούμε την ελληνική αρχικοποίηση
+airbit2_GR.initialize()
+
+
+
+
+
+
+while (arm) {
+    basic.showString("Disarm!")
+}
+
+basic.forever(function () {
+    if (stable == false) {
+        basic.showString("Tilted. Please reset.")
+    } else if (batterymVoltSmooth > 3450) {
+        screen()
+    } else if (batterymVoltSmooth > 3400) {
+        basic.showLeds(`
+            . . # . .
+            . # . # .
+            . # . # .
+            . # . # .
+            . # # # .
+            `)
+    } else {
+        basic.showLeds(`
+            . . # . .
+            . # . # .
+            . # . # .
+            . # . # .
+            . # # # .
+            `)
+        basic.showLeds(`
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            `)
+    }
+})
+
+basic.forever(function () {
+    radioSendData()
+})
+basic.forever(function () {
+    airbit.batteryCalculation()
+})
+basic.forever(function () {
+    mainLoop()
+})
