@@ -34,14 +34,14 @@ enum ThrottleAction {
 
 // Δηλώσεις εξωτερικών μεταβλητών για να μην βγάζει λάθη το MakeCode
 
-declare let throttle: number;
-declare let arm: number;
-declare let last_radio_time: number;
-declare let motorTesting: boolean;
-declare let imuRoll: number;
-declare let imuPitch: number;
-declare let yaw: number;
-declare let pitch: number;
+//declare let throttle: number;
+//declare let arm: number;
+//declare let last_radio_time: number;
+//declare let motorTesting: boolean;
+//declare let imuRoll: number;
+//declare let imuPitch: number;
+//declare let yaw: number;
+//declare let pitch: number;
 
 
 
