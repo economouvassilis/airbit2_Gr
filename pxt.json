@@ -10,6 +10,7 @@
     "files": [
         "main.blocks",
         "main.ts",
+        "joystickbit.ts",
         "README.md"
     ],
     "testFiles": [
