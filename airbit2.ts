@@ -3,7 +3,6 @@
  * Ελληνικό Πρόσθετο για το Air:bit 2
  */
 
-// Enums με αγγλικά ονόματα για μέγιστη συμβατότητα
 enum MoveDirection {
     //% block="Μπροστά"
     Forward,
@@ -55,7 +54,6 @@ namespace airbit2_GR {
         basic.showIcon(IconNames.No)
     }
 
-    // Χρήση αγγλικών παραμέτρων (dir, distance) για να δουλέψει το combo box
     //% block="Κινήσου %dir για %distance εκατοστά"
     //% distance.defl=50
     export function move(dir: MoveDirection, distance: number) {
