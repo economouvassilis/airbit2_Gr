@@ -44,6 +44,19 @@ namespace airbit2_GR {
     }
 
     /**
+     * Σβήνει ακαριαία όλα τα μοτέρ και αφοπλίζει το drone.
+     */
+    //% block="Επείγουσα Διακοπή"
+    //% color=#ff0000
+    export function emergencyStop() {
+        arm = 0 // Θέτει τη μεταβλητή arm σε 0 ακαριαία
+        throttle = 0 // Μηδενίζει την ισχύ
+        airbit.MotorSpeed(0, 0, 0, 0) // Στέλνει εντολή στα μοτέρ να σταματήσουν
+        basic.showIcon(IconNames.No)
+    }
+
+
+    /**
      * Απογείωση στα 100 εκατοστά
      */
     //% block="Απογείωση στα %targetHeight εκατοστά"
