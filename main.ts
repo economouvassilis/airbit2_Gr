@@ -1,6 +1,6 @@
 /**
- * Air:bit 2 - Πλήρες Κεντρικό Αρχείο
- * Διατηρεί όλες τις αυθεντικές λειτουργίες.
+ * Air:bit 2 - Πλήρες Κεντρικό Αρχείο (Συνδυασμένο)
+ * Διατηρεί όλες τις αυθεντικές λειτουργίες και ενσωματώνει τις ελληνικές εντολές.
  */
 
 function servo1_test () {
@@ -8,7 +8,6 @@ function servo1_test () {
     control.waitMicros(1500 + roll * 10)
     pins.digitalWritePin(DigitalPin.P1, 0)
 }
-
 function JoystickDeadBand () {
     if (Math.abs(roll) < 5) {
         roll = 0
@@ -17,24 +16,44 @@ function JoystickDeadBand () {
         pitch = 0
     }
 }
-
 function screen () {
     if (pins.analogReadPin(AnalogPin.P0) > 780) {
         if (pins.analogReadPin(AnalogPin.P0) > 950) {
             basic.showIcon(IconNames.Yes)
             basic.showString("Charging finished!")
         } else {
-            // Charging animations
-            basic.showLeds(`. . # . .\n. # # # .\n. # . # .\n. # . # .\n. # # # .`)
-            basic.showLeds(`. . # . .\n. # # # .\n. # . # .\n. # # # .\n. # # # .`)
-            basic.showLeds(`. . # . .\n. # # # .\n. # # # .\n. # # # .\n. # # # .`)
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                . # . # .
+                . # . # .
+                . # # # .
+                `)
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                . # . # .
+                . # # # .
+                . # # # .
+                `)
+            basic.showLeds(`
+                . . # . .
+                . # # # .
+                . # # # .
+                . # # # .
+                . # # # .
+                `)
         }
     } else {
         if (mode == 0) {
+            // ΕΔΩ Η ΑΛΛΑΓΗ: Αντικατάσταση του dots() με την ελληνική προβολή
             airbit2_GR.showInfo()
         }
         if (mode == 1) {
-            led.plotBarGraph(airbit.batteryLevel(), 100)
+            led.plotBarGraph(
+            airbit.batteryLevel(),
+            100
+            )
         }
         if (mode == 2) {
             basic.showNumber(airbit.batterymVolt())
@@ -54,43 +73,69 @@ function screen () {
         }
     }
 }
-
 function mainLoop () {
     while (true) {
+        // Read raw data from gyro and accelerometer
         airbit.IMU_sensorRead()
+        // Find drone's absolute Roll, Pitch and Yaw angles with sensor fusion, gyro and accelerometer together.
         airbit.calculateAngles()
         basic.pause(1)
         lostSignalCheck()
         if (motorTesting == false) {
+            // The "magic" algorithm that stabilises the drone based on setpoint angle and actual angle, finding the difference and chanring motor speed to compensate.
             airbit.stabilisePid()
         }
+        // If upside down while armed, disable flying
         if (Math.abs(imuRoll) > 90 && arm) {
             stable = false
         }
+        // Only start motors if armed, stable, motor controller and gyro is operating
         if (arm && stable && (mcExists && gyroExists)) {
             if (throttle == 0) {
-                airbit.MotorSpeed(5, 5, 5, 5)
+                // Idle speed of motors
+                airbit.MotorSpeed(
+                5,
+                5,
+                5,
+                5
+                )
             } else {
-                airbit.MotorSpeed(motorA, motorB, motorC, motorD)
+                airbit.MotorSpeed(
+                motorA,
+                motorB,
+                motorC,
+                motorD
+                )
             }
         } else {
+            // Clear registers for error compensation algorithms, do not keep errors from past flight.
             airbit.cleanReg()
             if (motorTesting) {
-                airbit.MotorSpeed(motorA, motorB, motorC, motorD)
+                airbit.MotorSpeed(
+                motorA,
+                motorB,
+                motorC,
+                motorD
+                )
             } else {
-                airbit.MotorSpeed(0, 0, 0, 0)
+                airbit.MotorSpeed(
+                0,
+                0,
+                0,
+                0
+                )
             }
         }
         cpuTime = input.runningTime() - startTime
         startTime = input.runningTime()
     }
 }
-
 input.onButtonPressed(Button.A, function () {
     mode += -1
-    if (mode < 0) { mode = 6 }
+    if (mode < 0) {
+        mode = 6
+    }
 })
-
 function radioSendData () {
     radio.sendValue("p", rollPitchP)
     radio.sendValue("i", rollPitchI)
@@ -103,16 +148,18 @@ function radioSendData () {
     radio.sendValue("p0", pins.analogReadPin(AnalogPin.P0))
     basic.pause(5000)
 }
-
+function gyroAccBubble () {
+	
+}
 input.onButtonPressed(Button.AB, function () {
     mode = 0
 })
-
 input.onButtonPressed(Button.B, function () {
     mode += 1
-    if (mode > 6) { mode = 0 }
+    if (mode > 6) {
+        mode = 0
+    }
 })
-
 function motorLed () {
     basic.clearScreen()
     led.plotBrightness(0, 4, motorA)
@@ -121,14 +168,15 @@ function motorLed () {
     led.plotBrightness(4, 0, motorD)
     led.plot(Math.map(imuRoll, -15, 15, 0, 4), Math.map(imuPitch, -15, 15, 4, 0))
 }
-
 radio.onReceivedValue(function (name, value) {
     radioReceivedTime = input.runningTime()
     if (name == "P") {
         pitch = expo(value) / -3
         pitch = Math.constrain(pitch, -15, 15)
     }
-    if (name == "A") { arm = value }
+    if (name == "A") {
+        arm = value
+    }
     if (name == "R") {
         roll = expo(value) / 3
         roll = Math.constrain(roll, -15, 15)
@@ -136,54 +184,100 @@ radio.onReceivedValue(function (name, value) {
     if (name == "T") {
         throttle = value
         throttle = Math.constrain(throttle, 0, 100)
-        if (batterymVoltSmooth < 3400) { throttle = Math.constrain(throttle, 0, 75) }
+        if (batterymVoltSmooth < 3400) {
+            throttle = Math.constrain(throttle, 0, 75)
+        }
     }
-    if (name == "Y") { yaw += value * 0.1 }
+    if (name == "Y") {
+        yaw += value * 0.1
+    }
 })
-
+// smartBar(0, throttle)
+// smartBar(4, airbit.batteryLevel())
 function dots () {
     basic.clearScreen()
     led.plot(Math.map(roll, -15, 15, 0, 4), Math.map(pitch, -15, 15, 4, 0))
     led.plot(Math.map(yaw, -30, 30, 0, 4), 4)
-    if (arm) { led.plot(0, 0) }
+    if (arm) {
+        led.plot(0, 0)
+    }
     airbit.smartBar(0, throttle)
     airbit.smartBar(4, airbit.batteryLevel())
 }
-
 function lostSignalCheck () {
+    // Failsafe makes only sense if already flying
     if (throttle > 65 && arm) {
         if (input.runningTime() > radioReceivedTime + 3000) {
-            roll = 0; pitch = 0; yaw = 0; throttle = 65
+            roll = 0
+            pitch = 0
+            yaw = 0
+            throttle = 65
         }
         if (input.runningTime() > radioReceivedTime + 8000) {
-            roll = 0; pitch = 0; yaw = 0; throttle = 0; arm = 0
+            roll = 0
+            pitch = 0
+            yaw = 0
+            throttle = 0
+            arm = 0
         }
     }
 }
-
 function motorTest () {
-    motorA = 0; motorB = 0; motorC = 0; motorD = 0
+    motorA = 0
+    motorB = 0
+    motorC = 0
+    motorD = 0
     motorTesting = true
     motorB = 5
     for (let index = 0; index < 50; index++) {
-        basic.clearScreen(); airbit.rotateDot(1, 1, 1, 10); basic.pause(20)
+        basic.clearScreen()
+        airbit.rotateDot(
+        1,
+        1,
+        1,
+        10
+        )
+        basic.pause(20)
     }
-    motorB = 0; motorD = 5
+    motorB = 0
+    motorD = 5
     for (let index = 0; index < 50; index++) {
-        basic.clearScreen(); airbit.rotateDot(3, 1, 1, -10); basic.pause(20)
+        basic.clearScreen()
+        airbit.rotateDot(
+        3,
+        1,
+        1,
+        -10
+        )
+        basic.pause(20)
     }
-    motorD = 0; motorC = 5
+    motorD = 0
+    motorC = 5
     for (let index = 0; index < 50; index++) {
-        basic.clearScreen(); airbit.rotateDot(3, 3, 1, 10); basic.pause(20)
+        basic.clearScreen()
+        airbit.rotateDot(
+        3,
+        3,
+        1,
+        10
+        )
+        basic.pause(20)
     }
-    motorC = 0; motorA = 5
+    motorC = 0
+    motorA = 5
     for (let index = 0; index < 50; index++) {
-        basic.clearScreen(); airbit.rotateDot(1, 3, 1, -10); basic.pause(20)
+        basic.clearScreen()
+        airbit.rotateDot(
+        1,
+        3,
+        1,
+        -10
+        )
+        basic.pause(20)
     }
     motorA = 0
     motorTesting = false
 }
-
 function expo (inp: number) {
     if (inp >= 0) {
         return inp / expoSetting + inp * inp / expoFactor
@@ -192,37 +286,39 @@ function expo (inp: number) {
     }
 }
 
-// --- ΟΛΕΣ ΟΙ ΜΕΤΑΒΛΗΤΕΣ ΜΕ EXPORT ---
-export let yaw = 0
-export let radioReceivedTime = 0
-export let startTime = 0
-export let cpuTime = 0
-export let motorTesting = false
-export let throttle = 0
-export let mode = 0
-export let pitch = 0
-export let roll = 0
-export let arm = 0
-export let expoFactor = 0
-export let expoSetting = 0
-export let motorD = 0
-export let motorB = 0
-export let motorC = 0
-export let motorA = 0
-export let yawD = 0
-export let yawP = 0
-export let rollPitchD = 0
-export let rollPitchI = 0
-export let rollPitchP = 0
-export let batterymVoltSmooth = 0
-export let imuRoll = 0
-export let imuPitch = 0
-export let stable = false
-export let gyroExists = false
-export let mcExists = false
-export let batteryVolt = 0
-export let imuYaw = 0
-export let baroExists = false
+// --- ΜΕΤΑΒΛΗΤΕΣ (Χωρίς export για αποφυγή σφάλματος) ---
+
+let yaw = 0
+let radioReceivedTime = 0
+let startTime = 0
+let cpuTime = 0
+let motorTesting = false
+let throttle = 0
+let mode = 0
+let pitch = 0
+let roll = 0
+let arm = 0
+let expoFactor = 0
+let expoSetting = 0
+let motorD = 0
+let motorB = 0
+let motorC = 0
+let motorA = 0
+let yawD = 0
+let yawP = 0
+let rollPitchD = 0
+let rollPitchI = 0
+let rollPitchP = 0
+let batterymVoltSmooth = 0
+let imuRoll = 0
+let imuPitch = 0
+let stable = false
+let gyroExists = false
+let mcExists = false
+let batteryVolt = 0
+let imuYaw = 0
+let baroExists = false
+// --- ΤΕΛΟΣ ΜΕΤΑΒΛΗΤΩΝ ---
 
 // --- INITIALIZATION ---
 mcExists = false
@@ -237,7 +333,10 @@ rollPitchI = 0.004
 rollPitchD = 15
 yawP = 5
 yawD = 70
-motorA = 0; motorC = 0; motorB = 0; motorD = 0
+motorA = 0
+motorC = 0
+motorB = 0
+motorD = 0
 expoSetting = 2
 expoFactor = 45 * 45 / (45 - 45 / expoSetting)
 
@@ -257,11 +356,38 @@ basic.forever(function () {
         basic.showString("Tilted. Please reset.")
     } else if (batterymVoltSmooth > 3450) {
         screen()
+    } else if (batterymVoltSmooth > 3400) {
+        basic.showLeds(`
+            . . # . .
+            . # . # .
+            . # . # .
+            . # . # .
+            . # # # .
+            `)
     } else {
-        basic.showLeds(`. . # . .\n. # . # .\n. # . # .\n. # . # .\n. # # # .`)
+        basic.showLeds(`
+            . . # . .
+            . # . # .
+            . # . # .
+            . # . # .
+            . # # # .
+            `)
+        basic.showLeds(`
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            . . . . .
+            `)
     }
 })
 
-basic.forever(function () { radioSendData() })
-basic.forever(function () { airbit.batteryCalculation() })
-basic.forever(function () { mainLoop() })
+basic.forever(function () {
+    radioSendData()
+})
+basic.forever(function () {
+    airbit.batteryCalculation()
+})
+basic.forever(function () {
+    mainLoop()
+})
