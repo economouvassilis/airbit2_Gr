@@ -52,7 +52,7 @@ namespace airbit2_GR {
     export function takeOff(targetHeight: number) {
         arm = 1
         // Σταδιακή αύξηση throttle για ομαλή αποκόλληση από το έδαφος
-        for (let i = 0; i <= 60; i++) {
+        for (let i = 0; i <= 65; i++) {
             throttle = i
             basic.pause(20)
         }
@@ -60,7 +60,7 @@ namespace airbit2_GR {
         // Υπολογισμός επιπλέον χρόνου ανόδου βάσει των εκατοστών
         // (Η αναλογία 20ms ανά cm είναι μια αρχική εκτίμηση)
         let risingTime = targetHeight * 20
-        throttle = 70 // Ισχύς ανόδου
+        throttle = 75 // Ισχύς ανόδου
         basic.pause(risingTime)
         
         // Επαναφορά σε throttle αιώρησης (hover)
