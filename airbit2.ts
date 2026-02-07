@@ -57,32 +57,28 @@ namespace airbit2_GR {
 
 
     /**
-     * Απογείωση στα 100 εκατοστά
-     */
+    * ΑΠΟΓΕΙΩΣΗ: Διορθωμένη για να μην σβήνει
+    */
     //% block="Απογείωση στα %targetHeight εκατοστά"
     //% targetHeight.defl=100
     export function takeOff(targetHeight: number) {
         arm = 1
-        
-        // 1. Ομαλό "ζέσταμα" μέχρι το hover point (65)
+        // 1. Σταδιακή άνοδος μέχρι το σημείο αποκόλλησης
         for (let i = 0; i <= 65; i++) {
             throttle = i
-            basic.pause(30) // Πιο αργή αύξηση για σταθερότητα
+            basic.pause(30) 
         }
         
-        // 2. Ώθηση για αποκόλληση και άνοδο
-        // Χρησιμοποιούμε 80 (αντί για 75) για να σιγουρέψουμε ότι θα ανέβει
-        throttle = 80 
+        // 2. ΙΣΧΥΡΗ ΩΘΗΣΗ: Ανεβάζουμε στο 83 για να σιγουρέψουμε την άνοδο
+        throttle = 83 
         
-        // Υπολογισμός: Για 100cm, δοκίμασε πολλαπλασιαστή 25 αντί για 20
-        // 100 * 25 = 2500ms (2.5 δευτερόλεπτα ανόδου)
-        let risingTime = targetHeight * 25 
+        // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ: Αυξάνουμε τον πολλαπλασιαστή στο 30 για το 1 μέτρο
+        let risingTime = targetHeight * 30 
         basic.pause(risingTime)
         
-        // 3. Σταθεροποίηση (Hover)
-        // Αν το drone σου είναι βαρύ, δοκίμασε 66-68 αντί για 65
-        throttle = 66 
-        basic.showIcon(IconNames.Happy)
+        // 4. ΚΡΑΤΗΜΑ (Hover): Μένουμε στο 67 για να μην πέσει
+        throttle = 67 
+        basic.showIcon(IconNames.Yes)
     }
 
 
