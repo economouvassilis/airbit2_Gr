@@ -1,4 +1,3 @@
-
 /**
 * Use this file to define custom export functions and blocks.
 * Read more at https://makecode.microbit.org/blocks/custom
@@ -647,6 +646,17 @@ namespace airbit {
     }
 
 
+    // Χρησιμοποιούμε declare για μεταβλητές που ορίζονται στο main.ts
+    // ώστε να μην υπάρχουν συγκρούσεις (36 λάθη)
+    declare let imuPitch: number
+    declare let imuRoll: number
+    declare let arm: number
+    declare let throttle: number
+    
+    // Κράτα μόνο τις μεταβλητές που είναι ΑΠΟΚΛΕΙΣΤΙΚΕΣ στο custom.ts
+    let BATTERY_FACTOR = 5.94
+    let mode = 0
+
    // let imuRoll = 0
     let gyroReturnId = 0
     let mcReturnId = 0
@@ -695,9 +705,9 @@ namespace airbit {
     //   let imuPitch = 0
     //   let imuRoll = 0
     let batteryLev = 0
-    let BATTERY_FACTOR = 5.94
-    let arm = 0
-    let mode = 0
+    //let BATTERY_FACTOR = 5.94
+    //let arm = 0
+    //let mode = 0
 
 
     let PCA_REG_LEDUOT = 8
