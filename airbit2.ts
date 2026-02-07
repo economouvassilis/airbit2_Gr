@@ -1,10 +1,9 @@
 /**
  * Βασίλης Οικονόμου 7/2/2023
  * Ελληνικό Πρόσθετο για το Air:bit 2
- * Παρέχει απλοποιημένες εντολές στα Ελληνικά για τον έλεγχο του drone.
  */
 
-// 1. Ορισμός Enums με διαφορετικό όνομα από τις παραμέτρους για να εμφανιστούν τα μενού
+// Ορισμός των Enums ΕΚΤΟΣ namespace για να τα "βλέπει" το MakeCode αμέσως
 enum MoveDir {
     //% block="Μπροστά"
     Forward,
@@ -56,6 +55,9 @@ namespace airbit2_GR {
         basic.showIcon(IconNames.No)
     }
 
+    /**
+     * Κίνηση - Χρήση % για το combo box
+     */
     //% block="Κινήσου %κατεύθυνση για %cm εκατοστά"
     //% cm.defl=50
     export function κίνηση(κατεύθυνση: MoveDir, cm: number) {
@@ -74,6 +76,9 @@ namespace airbit2_GR {
         throttle = Math.constrain(throttle, 0, 100)
     }
 
+    /**
+     * Στροφή - Χρήση % για το combo box
+     */
     //% block="Στρίψε %στροφή %μοίρες μοίρες"
     //% μοίρες.min=0 μοίρες.max=360
     export function στροφή(στροφή: TurnDir, μοίρες: number) {
