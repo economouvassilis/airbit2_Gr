@@ -30,6 +30,22 @@ enum ThrottleAction {
     Decrease
 }
 
+
+
+// Δηλώσεις εξωτερικών μεταβλητών για να μην βγάζει λάθη το MakeCode
+declare let throttle: number;
+declare let arm: number;
+declare let last_radio_time: number;
+declare let motorTesting: boolean;
+declare let imuRoll: number;
+declare let imuPitch: number;
+declare let yaw: number;
+declare let pitch: number;
+
+
+
+
+
 //% weight=100 color=#00AEEF icon="\uf140" block="AirBit Ελληνικά"
 namespace airbit2_GR {
 
@@ -126,7 +142,11 @@ namespace airbit2_GR {
     }
 
 
+/**
+     * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
+     */
     //% block="Ταχύτητα %action κατά %amount"
+    //% amount.min=0 amount.max=100
     export function setThrottle(action: ThrottleAction, amount: number) {
         if (action == ThrottleAction.Increase) {
             throttle = throttle + amount
@@ -134,13 +154,13 @@ namespace airbit2_GR {
             throttle = throttle - amount
         }
         
-        // 1. Ασφάλεια: Μην πέσει κάτω από το hover level (45)
+        // Ασφάλεια: Περιορισμός τιμής
         throttle = Math.constrain(throttle, 45, 100)
         
-        // 2. Επικαιροποίηση χρόνου: Σταματάει το Failsafe από το να την αλλάξει
+        // Ενημέρωση χρόνου για να μην την αλλάξει το failsafe του main.ts
         last_radio_time = control.millis() 
         
-        // 3. Άμεση Εφαρμογή: Δίνει την εντολή στα μοτέρ ΤΩΡΑ
+        // Άμεση εφαρμογή στα μοτέρ
         airbit.stabilisePid() 
     }
 
