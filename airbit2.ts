@@ -43,14 +43,50 @@ namespace airbit2_GR {
         basic.showIcon(IconNames.Happy)
     }
 
-    //% block="Απογείωση"
-    export function takeOff() {
+    /**
+     * Απογείωση σε συγκεκριμένο ύψος.
+     * @param targetHeight Το επιθυμητό ύψος σε εκατοστά (cm)
+     */
+    //% block="Απογείωση στα %targetHeight εκατοστά"
+    //% targetHeight.defl=50
+    export function takeOff(targetHeight: number) {
         arm = 1
-        for (let i = 0; i <= 65; i++) {
+        // Σταδιακή αύξηση throttle για ομαλή αποκόλληση από το έδαφος
+        for (let i = 0; i <= 60; i++) {
             throttle = i
             basic.pause(20)
         }
+        
+        // Υπολογισμός επιπλέον χρόνου ανόδου βάσει των εκατοστών
+        // (Η αναλογία 20ms ανά cm είναι μια αρχική εκτίμηση)
+        let risingTime = targetHeight * 20
+        throttle = 70 // Ισχύς ανόδου
+        basic.pause(risingTime)
+        
+        // Επαναφορά σε throttle αιώρησης (hover)
+        throttle = 65 
     }
+
+
+    /**
+     * Προσγείωση από το τρέχον ύψος.
+     * @param currentHeight Το τρέχον ύψος σε εκατοστά (cm)
+     */
+    //% block="Προσγείωση από τα %currentHeight εκατοστά"
+    //% currentHeight.defl=50
+    export function land(currentHeight: number) {
+        // Υπολογισμός χρόνου καθόδου βάσει του ύψους
+        let landingTime = currentHeight * 30
+        
+        throttle = 55 // Χαμηλή ισχύς για ελεγχόμενη κάθοδο
+        basic.pause(landingTime)
+        
+        // Σβήσιμο κινητήρων
+        arm = 0
+        airbit.MotorSpeed(0, 0, 0, 0)
+        basic.showIcon(IconNames.No)
+    }
+
 
     /**
      * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
@@ -69,18 +105,6 @@ namespace airbit2_GR {
     }
 
 
-
-
-    //% block="Προσγείωση"
-    export function land() {
-        for (let i = throttle; i >= 0; i--) {
-            throttle = i
-            basic.pause(30)
-        }
-        arm = 0
-        airbit.MotorSpeed(0, 0, 0, 0)
-        basic.showIcon(IconNames.No)
-    }
 
 
 
