@@ -144,6 +144,15 @@ namespace airbit2_GR {
     }
 
 
+    /**
+     * Επιστρέφει την τρέχουσα τιμή της ταχύτητας (throttle).
+     */
+    //% block="Τρέχουσα ταχύτητα"
+    export function getCurrentThrottle(): number {
+        // Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
+        return throttle
+    }
+
 
 
     //% block="Κινήσου %dir για %distance εκατοστά"
