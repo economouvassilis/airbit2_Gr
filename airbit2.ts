@@ -36,7 +36,7 @@ enum ThrottleAction {
 
 //declare let throttle: number;
 //declare let arm: number;
-//declare let last_radio_time: number;
+declare let last_radio_time: number;
 //declare let motorTesting: boolean;
 //declare let imuRoll: number;
 //declare let imuPitch: number;
