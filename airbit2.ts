@@ -145,11 +145,10 @@ namespace airbit2_GR {
 
 
     /**
-     * Επιστρέφει την τρέχουσα τιμή της ταχύτητας (throttle).
+     * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
      */
     //% block="Τρέχουσα ταχύτητα"
     export function getCurrentThrottle(): number {
-        // Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
         return throttle
     }
 
