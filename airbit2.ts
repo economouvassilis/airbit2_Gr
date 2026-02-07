@@ -44,48 +44,45 @@ namespace airbit2_GR {
     }
 
     /**
-     * Απογείωση σε συγκεκριμένο ύψος.
-     * @param targetHeight Το επιθυμητό ύψος σε εκατοστά (cm)
+     * Απογείωση στα 100 εκατοστά
      */
     //% block="Απογείωση στα %targetHeight εκατοστά"
-    //% targetHeight.defl=50
+    //% targetHeight.defl=100
     export function takeOff(targetHeight: number) {
         arm = 1
-        // Σταδιακή αύξηση throttle για ομαλή αποκόλληση από το έδαφος
+        
+        // 1. Ομαλό "ζέσταμα" μέχρι το hover point (65)
         for (let i = 0; i <= 65; i++) {
             throttle = i
-            basic.pause(20)
+            basic.pause(30) // Πιο αργή αύξηση για σταθερότητα
         }
         
-        // Υπολογισμός επιπλέον χρόνου ανόδου βάσει των εκατοστών
-        // (Η αναλογία 20ms ανά cm είναι μια αρχική εκτίμηση)
-        let risingTime = targetHeight * 20
-        throttle = 75 // Ισχύς ανόδου
+        // 2. Ώθηση για αποκόλληση και άνοδο
+        // Χρησιμοποιούμε 80 (αντί για 75) για να σιγουρέψουμε ότι θα ανέβει
+        throttle = 80 
+        
+        // Υπολογισμός: Για 100cm, δοκίμασε πολλαπλασιαστή 25 αντί για 20
+        // 100 * 25 = 2500ms (2.5 δευτερόλεπτα ανόδου)
+        let risingTime = targetHeight * 25 
         basic.pause(risingTime)
         
-        // Επαναφορά σε throttle αιώρησης (hover)
-        throttle = 65 
+        // 3. Σταθεροποίηση (Hover)
+        // Αν το drone σου είναι βαρύ, δοκίμασε 66-68 αντί για 65
+        throttle = 66 
+        basic.showIcon(IconNames.Happy)
     }
 
 
-    /**
-     * Προσγείωση από το τρέχον ύψος.
-     * @param currentHeight Το τρέχον ύψος σε εκατοστά (cm)
-     */
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
-    //% currentHeight.defl=50
     export function land(currentHeight: number) {
-        // Υπολογισμός χρόνου καθόδου βάσει του ύψους
-        let landingTime = currentHeight * 30
-        
-        throttle = 55 // Χαμηλή ισχύς για ελεγχόμενη κάθοδο
-        basic.pause(landingTime)
-        
-        // Σβήσιμο κινητήρων
+        // Κατεβαίνουμε σταδιακά από το hover (66) στο 50
+        for (let j = 66; j >= 50; j--) {
+            throttle = j
+            basic.pause(currentHeight * 2) // Χρόνος καθόδου ανάλογα με το ύψος
+        }
         arm = 0
         airbit.MotorSpeed(0, 0, 0, 0)
-        basic.showIcon(IconNames.No)
-    }
+    }   
 
 
     /**
