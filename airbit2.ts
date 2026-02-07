@@ -4,6 +4,34 @@
  * Παρέχει απλοποιημένες εντολές στα Ελληνικά για τον έλεγχο του drone.
  */
 
+
+/**
+ * Βασίλης Οικονόμου 7/2/2023
+ * Ελληνικό Πρόσθετο για το Air:bit 2
+ * Παρέχει απλοποιημένες εντολές στα Ελληνικά για τον έλεγχο του drone.
+ */
+
+// ΟΡΙΣΜΟΣ ENUMS ΣΤΗΝ ΑΡΧΗ ΓΙΑ ΤΗΝ ΕΜΦΑΝΙΣΗ ΤΩΝ COMBO BOXES
+namespace airbit2_GR {
+    export enum Κατεύθυνση {
+        //% block="Μπροστά"
+        Forward,
+        //% block="Πίσω"
+        Backward,
+        //% block="Πάνω"
+        Up,
+        //% block="Κάτω"
+        Down
+    }
+
+    export enum ΔεξιάΑριστερά {
+        //% block="Δεξιά"
+        Right,
+        //% block="Αριστερά"
+        Left
+    }
+}
+
 //% weight=100 color=#00AEEF icon="\uf140" block="AirBit Ελληνικά"
 namespace airbit2_GR {
 
@@ -110,23 +138,5 @@ namespace airbit2_GR {
     //% block="Επίπεδο Μπαταρίας"
     export function ποσοστόΜπαταρίας(): number {
         return airbit.batteryLevel()
-    }
-
-    export enum Κατεύθυνση {
-        //% block="Μπροστά"
-        Forward,
-        //% block="Πίσω"
-        Backward,
-        //% block="Πάνω"
-        Up,
-        //% block="Κάτω"
-        Down
-    }
-
-    export enum ΔεξιάΑριστερά {
-        //% block="Δεξιά"
-        Right,
-        //% block="Αριστερά"
-        Left
     }
 }
