@@ -681,7 +681,7 @@ namespace airbit {
     //let aux = 0
     //let startTime = 0
     //let cpuTime = 0
-    //let yawIdiff = 0
+    let yawIdiff = 0
     let yawDiff = 0
     let rollDdiff = 0
     let lastPitchDiff = 0
@@ -724,9 +724,9 @@ namespace airbit {
     let PCA_pwm3 = 5
     //let PCA_return = 0
     let BARO_return = 0
-    //let pitchPdiff = 0
+    let pitchPdiff = 0
     //let rollPitchISmall = 0
-    //let rollPdiff = 0
+    let rollPdiff = 0
     //let gyroYangle = 0
     //let gyroXangle = 0
     //let gyroZangle = 0
