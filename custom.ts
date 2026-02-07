@@ -655,13 +655,13 @@ namespace airbit {
     
     // Κράτα μόνο τις μεταβλητές που είναι ΑΠΟΚΛΕΙΣΤΙΚΕΣ στο custom.ts
     let BATTERY_FACTOR = 5.94
-    let mode = 0
+    //let mode = 0
 
    // let imuRoll = 0
     let gyroReturnId = 0
     let mcReturnId = 0
-    let calibratedRoll = 0
-    let calibratedPitch = 0
+    //let calibratedRoll = 0
+    //let calibratedPitch = 0
     let throttleScaled = 0
     let yawCorrection = 0
     let pitchCorrection = 0
@@ -674,10 +674,10 @@ namespace airbit {
     let accPitchOffset = 0  //  Calibration offset of the Pitch
     let soundStage = 0
     let oldTime = 0
-    let aux = 0
-    let startTime = 0
-    let cpuTime = 0
-    let yawIdiff = 0
+    //let aux = 0
+    //let startTime = 0
+    //let cpuTime = 0
+    //let yawIdiff = 0
     let yawDiff = 0
     let rollDdiff = 0
     let lastPitchDiff = 0
@@ -686,7 +686,7 @@ namespace airbit {
     let rollIdiff = 0
     let yawDdiff = 0
     let stable = 0
-    let interruptCounter = 0
+    //let interruptCounter = 0
     let gyroZcalibration = 0
     let gyroZ = 0
     let gyroZdelta = 0
@@ -718,25 +718,25 @@ namespace airbit {
     let PCA_pwm1 = 3
     let PCA_pwm2 = 4
     let PCA_pwm3 = 5
-    let PCA_return = 0
+    //let PCA_return = 0
     let BARO_return = 0
-    let pitchPdiff = 0
-    let rollPitchISmall = 0
-    let rollPdiff = 0
-    let gyroYangle = 0
-    let gyroXangle = 0
-    let gyroZangle = 0
-    let tuning = 0
+    //let pitchPdiff = 0
+    //let rollPitchISmall = 0
+    //let rollPdiff = 0
+    //let gyroYangle = 0
+    //let gyroXangle = 0
+    //let gyroZangle = 0
+    //let tuning = 0
     let PCA_REG_MODE2_CONFIG = 5        // Non-inverted: Open Drain: = %00001(1), Totem: = %00101(5), Inverted: Totem = %10101(21), Open drain: = %10001(17)
 
     let IMU_REG_CONFIG = 1          // 0x6b
     let IMU_PWR_MGMT_1 = 107        // 0x6b
-    let IMU_PWR_MGMT_2 = 108        // 0x6B
+    //let IMU_PWR_MGMT_2 = 108        // 0x6B
     let IMU_WHO_AM_I = 117              // 0x68
     let IMU_SIGNAL_PATH_RESET = 105 // 0x6a
     let IMU_USER_CTRL = 106
-    let IMU_GYRO_CONFIG = 27
-    let IMU_ACCEL_CONFIG = 28
+    //let IMU_GYRO_CONFIG = 27
+    //let IMU_ACCEL_CONFIG = 28
     let IMU_ACCEL_CONFIG_2 = 29
     let IMU_REG_ADDRESS = 104
     let BARO_REG_SLAVEADR = 99
@@ -749,8 +749,8 @@ namespace airbit {
     rollPitchI = 0
     rollPitchD = 15
 
-    let radioGroup = 7
-    let motorSpeed = -1
+    //let radioGroup = 7
+    //let motorSpeed = -1
 
 
 
