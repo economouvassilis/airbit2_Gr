@@ -1,4 +1,4 @@
-**
+/**
  * Air:bit 2 - Πλήρες Κεντρικό Αρχείο (Συνδυασμένο)
  * Διατηρεί όλες τις αυθεντικές λειτουργίες και ενσωματώνει τις ελληνικές εντολές.
  */
@@ -47,7 +47,7 @@ function screen () {
     } else {
         if (mode == 0) {
             // ΕΔΩ Η ΑΛΛΑΓΗ: Αντικατάσταση του dots() με την ελληνική προβολή
-            airbit2_GR.προβολήΠληροφοριών()
+            airbit2_GR.showInfo()
         }
         if (mode == 1) {
             led.plotBarGraph(
@@ -287,6 +287,7 @@ function expo (inp: number) {
 }
 
 // --- ΜΕΤΑΒΛΗΤΕΣ ΜΕ EXPORT ---
+
 export let yaw = 0
 export let radioReceivedTime = 0
 export let startTime = 0
@@ -344,7 +345,7 @@ i2crr.setI2CPins(DigitalPin.P2, DigitalPin.P1)
 basic.pause(100)
 
 // ΕΔΩ Η ΑΛΛΑΓΗ: Καλούμε την ελληνική αρχικοποίηση
-airbit2_GR.αρχικοποίηση()
+airbit2_GR.initialize()
 
 while (arm) {
     basic.showString("Disarm!")
@@ -390,10 +391,6 @@ basic.forever(function () {
 basic.forever(function () {
     mainLoop()
 })
-
-
-
-
 
 
 
