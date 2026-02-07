@@ -134,10 +134,13 @@ namespace airbit2_GR {
             throttle = throttle - amount
         }
         
-        // ΦΙΛΤΡΟ: Περιορισμός και άμεση επιβολή τιμής
+        // 1. Ασφάλεια: Μην πέσει κάτω από το hover level (45)
         throttle = Math.constrain(throttle, 45, 100)
         
-        // Αναγκάζουμε το Air:bit να εφαρμόσει την αλλαγή ΤΩΡΑ
+        // 2. Επικαιροποίηση χρόνου: Σταματάει το Failsafe από το να την αλλάξει
+        last_radio_time = control.millis() 
+        
+        // 3. Άμεση Εφαρμογή: Δίνει την εντολή στα μοτέρ ΤΩΡΑ
         airbit.stabilisePid() 
     }
 
