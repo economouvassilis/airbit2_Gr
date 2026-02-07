@@ -126,21 +126,19 @@ namespace airbit2_GR {
     }
 
 
-    /**
-     * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
-     * @param action Αύξηση ή Μείωση
-     * @param amount Τιμή από 0 έως 100
-     */
     //% block="Ταχύτητα %action κατά %amount"
-    //% amount.min=0 amount.max=100
     export function setThrottle(action: ThrottleAction, amount: number) {
         if (action == ThrottleAction.Increase) {
-            throttle += amount
+            throttle = throttle + amount
         } else if (action == ThrottleAction.Decrease) {
-            throttle -= amount
+            throttle = throttle - amount
         }
-        // Περιορισμός τιμής για ασφάλεια πτήσης
-        throttle = Math.constrain(throttle, 0, 100)
+        
+        // ΦΙΛΤΡΟ: Περιορισμός και άμεση επιβολή τιμής
+        throttle = Math.constrain(throttle, 45, 100)
+        
+        // Αναγκάζουμε το Air:bit να εφαρμόσει την αλλαγή ΤΩΡΑ
+        airbit.stabilisePid() 
     }
 
 
