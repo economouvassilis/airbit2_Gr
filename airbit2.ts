@@ -21,6 +21,15 @@ enum TurnDirection {
     Left
 }
 
+
+
+enum ThrottleAction {
+    //% block="Αύξηση"
+    Increase,
+    //% block="Μείωση"
+    Decrease
+}
+
 //% weight=100 color=#00AEEF icon="\uf140" block="AirBit Ελληνικά"
 namespace airbit2_GR {
 
@@ -43,6 +52,25 @@ namespace airbit2_GR {
         }
     }
 
+    /**
+     * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
+     * Συγκεντρώνει τις εντολές: IMU_sensorRead, calculateAngles και stabilisePid.
+     */
+    //% block="Σταθεροποίηση"
+    export function stabilization() {
+        // Διάβασμα αισθητήρων
+        airbit.IMU_sensorRead()
+        // Υπολογισμός γωνιών
+        airbit.calculateAngles()
+        // Σταθεροποίηση PID αν δεν είμαστε σε λειτουργία τεστ μοτέρ
+        if (motorTesting == false) {
+            airbit.stabilisePid()
+        }
+    }
+
+
+
+
     //% block="Προσγείωση"
     export function land() {
         for (let i = throttle; i >= 0; i--) {
@@ -53,6 +81,28 @@ namespace airbit2_GR {
         airbit.MotorSpeed(0, 0, 0, 0)
         basic.showIcon(IconNames.No)
     }
+
+
+
+    /**
+     * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
+     * @param action Αύξηση ή Μείωση
+     * @param amount Τιμή από 0 έως 100
+     */
+    //% block="Ταχύτητα %action κατά %amount"
+    //% amount.min=0 amount.max=100
+    export function setThrottle(action: ThrottleAction, amount: number) {
+        if (action == ThrottleAction.Increase) {
+            throttle += amount
+        } else if (action == ThrottleAction.Decrease) {
+            throttle -= amount
+        }
+        // Περιορισμός τιμής για ασφάλεια πτήσης
+        throttle = Math.constrain(throttle, 0, 100)
+    }
+
+
+
 
     //% block="Κινήσου %dir για %distance εκατοστά"
     //% distance.defl=50
