@@ -125,9 +125,9 @@ magicNumber = "P1.2,I20,D0.2,Y2"
 magicNumber = "P1.2,I0.015,D50,Yp20,Yi0.01"
 magicNumber = "git:P1.3,I0.04,D18,Yp4,Yi0.02"
 magicNumber = "P0.5,I0,D15,Yp3,Yi0"
-rollPitchP = 0.5
-rollPitchI = 0
-rollPitchD = 15
+//rollPitchP = 0.5
+//rollPitchI = 0
+//rollPitchD = 15
 
 let motorSpeed = -1
 
@@ -924,8 +924,8 @@ namespace airbit2_GR {
         let risingTime = targetHeight * 30 
         basic.pause(risingTime)
         
-        // 4. ΚΡΑΤΗΜΑ (Hover): Μένουμε στο 67 για να μην πέσει
-        throttle = 67 
+        // 4. ΚΡΑΤΗΜΑ (Hover): ήταν 67 και το μεγάλωσαγια να μην πέσει
+        throttle = 70 
         basic.showIcon(IconNames.Yes)
     }
 
@@ -933,7 +933,7 @@ namespace airbit2_GR {
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
     export function land(currentHeight: number) {
         // Κατεβαίνουμε σταδιακά από το hover (66) στο 50
-        for (let j = 66; j >= 50; j--) {
+        for (let j = 68; j >= 50; j--) {
             throttle = j
             basic.pause(currentHeight * 2) // Χρόνος καθόδου ανάλογα με το ύψος
         }
