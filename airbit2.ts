@@ -57,7 +57,7 @@ namespace airbit2_GR {
 
 
     /**
-    * ΑΠΟΓΕΙΩΣΗ: Διορθωμένη για να μην σβήνει
+    * ΑΠΟΓΕΙΩΣΗ
     */
     //% block="Απογείωση στα %targetHeight εκατοστά"
     //% targetHeight.defl=100
@@ -111,7 +111,19 @@ namespace airbit2_GR {
     }
 
 
-
+    /**
+     * Ορίζει την ισχύ των μοτέρ (ταχύτητα) σε μια συγκεκριμένη τιμή.
+     * @param speed Η επιθυμητή ταχύτητα από 0 έως 100
+     */
+    //% block="Όρισε ταχύτητα σε %speed"
+    //% speed.min=0 speed.max=100
+    export function targetThrottle(speed: number) {
+        // Θέτουμε τη μεταβλητή throttle απευθείας στην τιμή που θέλουμε
+        throttle = speed
+        
+        // Περιορισμός τιμής μεταξύ 0 και 100 για απόλυτη ασφάλεια
+        throttle = Math.constrain(throttle, 0, 100)
+    }
 
 
     /**
