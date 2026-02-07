@@ -1,13 +1,12 @@
-
 /**
 * Use this file to define custom export functions and blocks.
 * Read more at https://makecode.microbit.org/blocks/custom
 */
 
 enum MyEnum {
-    //% block="one"
+    //% block="ένα"
     One,
-    //% block="two"
+    //% block="δύο"
     Two
 }
 
@@ -24,7 +23,7 @@ namespace airbit {
     */
 
     //% blockID=airbit_smart_bar
-    //% block="Smart Bar $x $amount"
+    //% block="Έξυπνη Μπάρα $x $amount"
     //% group='Screen'
     //% x.min = 0 x.max=4
     //% amount.min = 0 amount.max = 100
@@ -41,7 +40,7 @@ namespace airbit {
      */
 
     //% blockID=airbit_start_baro
-    //% block="Start Barometer"
+    //% block="Ξεκίνα το βαρόμετρο"
     //% group='Control'
     export function baroStart() {
         // Soft reset
@@ -107,7 +106,7 @@ namespace airbit {
      * Battery level in %
      */
     //% blockID=airbit_battery_level
-    //% block="Battery Level"
+    //% block="Επίπεδο μπαταρίας"
     //% group='Battery management'
 
     export function batteryLevel() {
@@ -121,7 +120,7 @@ namespace airbit {
     */
 
     //% blockID=airbit_battery_calculation
-    //% block="Battery Calculation"
+    //% block="Υπολογισμός μπαταρίας"
     //% group='Battery management'
 
     export function batteryCalculation() {
@@ -150,7 +149,7 @@ namespace airbit {
      */
 
     //% blockID=airbit_read_pca
-    //% block="Read Motor Controller"
+    //% block="Διαβάστε τον ελεγκτή κινητήρων"
     //% group='System'
 
     export function readPCA(num: number) {
@@ -193,7 +192,7 @@ namespace airbit {
      */
 
     //% blockID=airbit_calculate_angles
-    //% block="Calculate Angles"
+    //% block="Υπολογισμός γωνιών"
     //% group='Control'
 
     export function calculateAngles() {
@@ -240,7 +239,7 @@ namespace airbit {
         Control the individual speed of each motor.
      */
     //% blockID=airbit_motor_speed
-    //% block="Motor Speed $m0 $m1 $m2 $m3"
+    //% block="Ταχύτητα κινητήρων $m0 $m1 $m2 $m3"
     //% m0.min=0 m0.max=255
     //% m1.min=0 m1.max=255
     //% m2.min=0 m2.max=255
@@ -281,7 +280,7 @@ namespace airbit {
     */
 
     //% blockID=airbit_start_imu
-    //% block="Start Gyro/Acc"
+    //% block="Έναρξη Γυροσκόπιου/Acc"
     //% group='Control'
 
     export function IMU_Start() {
@@ -368,7 +367,7 @@ namespace airbit {
     */
 
     //% blockID=airbit_write_pca
-    //% block="Write PCA"
+    //% block="Εγγραφή στον ελεγκτή κινητήρα (PCA)"
     //% group='System'
 
     export function PCA_Write(register: number, value: number) {
@@ -412,7 +411,7 @@ namespace airbit {
      */
 
     //% blockID=airbit_read_imu
-    //% block="Read Gyro/Acc"
+    //% block="Διάβασε Γυροσκόπιο/Acc"
     //% group='Control'
 
     export function IMU_sensorRead() {
@@ -452,7 +451,7 @@ namespace airbit {
     */
 
     //% blockID=airbit_start_pca
-    //% block="Start Motor Controller"
+    //% block="Ελεγκτής εκκίνησης κινητήρα"
     //% group='Control'
 
     export function PCA_Start() {
@@ -535,7 +534,7 @@ namespace airbit {
      */
 
     //% blockID=airbit_stabilise_pid
-    //% block="Stabilise PID"
+    //% block="Σταθεροποίηση PID"
     //% group='Control'
 
 
