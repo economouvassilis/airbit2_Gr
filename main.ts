@@ -903,7 +903,34 @@ namespace airbit2_GR {
         basic.showIcon(IconNames.No)
     }
 
+    /*
+    /**
+    * ΑΠΟΓΕΙΩΣΗ
+    
+    //% block="Απογείωση στα %targetHeight εκατοστά"
+    //% targetHeight.defl=100
+    export function takeOff(targetHeight: number) {
+        arm = 1
+        // 1. Σταδιακή άνοδος μέχρι το σημείο αποκόλλησης
+        for (let i = 0; i <= 65; i++) {
+            throttle = i
+            basic.pause(30) 
+        }
+        
+        // 2. ΙΣΧΥΡΗ ΩΘΗΣΗ: Ανεβάζουμε στο 83 για να σιγουρέψουμε την άνοδο
+        throttle = 83 
+        
+        // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ: Αυξάνουμε τον πολλαπλασιαστή στο 30 για το 1 μέτρο
+        let risingTime = targetHeight * 30 
+        basic.pause(risingTime)
+        
+        // 4. ΚΡΑΤΗΜΑ (Hover): ήταν 67 και το μεγάλωσαγια να μην πέσει
+        throttle = 70 
+        //basic.showIcon(IconNames.Yes)
+    }
 
+    */
+   
     /**
     * ΑΠΟΓΕΙΩΣΗ - Ομαλή έκδοση
     */
@@ -916,7 +943,7 @@ namespace airbit2_GR {
         // Ανεβαίνουμε ομαλά μέχρι το σημείο που το drone ετοιμάζεται να σηκωθεί
         for (let i = 0; i <= 65; i++) {
             throttle = i
-            airbit.MotorSpeed(throttle, throttle, throttle, throttle)
+            //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
             basic.pause(30) 
         }
         
@@ -924,12 +951,12 @@ namespace airbit2_GR {
         // Αντί για throttle = 83, ανεβαίνουμε σταδιακά για να μην "κλωτσήσει"
         for (let i = 66; i <= 83; i++) {
             throttle = i
-            airbit.MotorSpeed(throttle, throttle, throttle, throttle)
+            //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
             basic.pause(20) // Γρήγορη αλλά ομαλή αύξηση
         }
         
         // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ
-        let risingTime = targetHeight * 28 
+        let risingTime = targetHeight * 30 
         basic.pause(risingTime)
         
         // 4. ΟΜΑΛΗ ΜΕΤΑΒΑΣΗ ΣΤΟ HOVER (Smooth Leveling)
@@ -937,11 +964,10 @@ namespace airbit2_GR {
         // για να μην "βουτήξει" το drone μόλις φτάσει στο ύψος στόχο
         for (let i = 83; i >= 70; i--) {
             throttle = i
-            airbit.MotorSpeed(throttle, throttle, throttle, throttle)
+            //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
             basic.pause(40) // Δίνουμε χρόνο στους έλικες να σταθεροποιηθούν
         }
     }
-
 
 
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
