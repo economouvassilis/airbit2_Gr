@@ -1027,16 +1027,24 @@ namespace airbit2_GR {
 
     /**
      * Εμφανίζει πληροφορίες στο LED Panel:
-     * Eπίπεδο φόρτισης μπαταρίας και Roll/Pitch
-     * 
+     * Χρησιμοποιεί τις καλιμπραρισμένες τιμές (imuRoll, imuPitch)
      */
     //% block="Πληροφορίες πτήσης στο LED Panel"
     //% group='Συντήρηση'
     export function showInfo() {
         basic.clearScreen()
+        // Εμφάνιση μπαταρίας στην άκρη
         airbit.smartBar(4, airbit.batteryLevel())
-        let ledX = Math.map(imuRoll, -15, 15, 0, 4)
-        let ledY = Math.map(imuPitch, -15, 15, 4, 0)
+
+        // Υπολογισμός θέσης τελείας βάσει των καλιμπραρισμένων τιμών
+        // Χρησιμοποιούμε Math.round για να κλειδώσει η τελεία στα LED
+        let ledX = Math.round(Math.map(imuRoll, -15, 15, 0, 4))
+        let ledY = Math.round(Math.map(imuPitch, -15, 15, 4, 0))
+
+        // Περιορισμός τιμών (Constrain) για να μην βγει η τελεία εκτός οθόνης (0-4)
+        ledX = Math.max(0, Math.min(4, ledX))
+        ledY = Math.max(0, Math.min(4, ledY))
+
         led.plot(ledX, ledY)
     }
 
@@ -1044,19 +1052,49 @@ namespace airbit2_GR {
     /**
      * Ενεργοποιεί τα μοτέρ σε κατάσταση αναμονής (Arm).
      * Μετά μπορείς να αυξήσεις το γκάζι σταδιακά.
-     */
+     
     //% block="Εκκίνηση μηχανών (ARM)"
     //% group='Πτήση'
     export function armMotors() {
         arm = 1  // Ενεργοποίηση της πτήσης
         stable = true // Θεωρούμε το drone σταθερό για να ξεκινήσει
-        throttle = 20 // Ξεκινάμε με ένα χαμηλό γκάζι ασφαλείας
+        throttle = 25 // Ξεκινάμε με ένα χαμηλό γκάζι ασφαλείας
         
         // Οπτική ένδειξη ότι το drone είναι έτοιμο
         basic.showIcon(IconNames.Sword) 
         basic.pause(500)
         basic.clearScreen()
     }
+*/
+
+    /**
+     * Προετοιμάζει το drone για πτήση: Καλιμπράρει και οπλίζει τα μοτέρ.
+     * ΠΡΕΠΕΙ ΤΟ DRONE ΝΑ ΕΙΝΑΙ ΑΚΙΝΗΤΟ ΚΑΙ ΕΠΙΠΕΔΟ.
+     */
+    //% block="Προετοιμασία και Εκκίνηση (ARM)"
+    //% group='Πτήση'
+    export function armMotors() {
+        // 1. Καλιμπράρισμα (για να πάει η τελεία στο κέντρο και να ισορροπήσει το PID)
+        airbit.IMU_sensorRead()
+        accPitchOffset = (-57.295 * Math.atan2(accY, accZ))
+        accRollOffset = (-57.295 * Math.atan2(accX, accZ))
+        imuPitch = 0
+        imuRoll = 0
+        imuYaw = 0 // Μηδενίζουμε και την περιστροφή
+        
+        // 2. Οπλισμός
+        arm = 1
+        stable = true
+        throttle = 25 // Ξεκινάμε με πολύ χαμηλό γκάζι (idle)
+        
+        basic.showIcon(IconNames.Yes)
+        basic.pause(500)
+        basic.clearScreen()
+    }
+
+
+
+
 
 
     /**
@@ -1088,7 +1126,7 @@ namespace airbit2_GR {
         }
         
         // Ασφάλεια: Περιορισμός τιμής
-        throttle = Math.constrain(throttle, 30, 100)
+        throttle = Math.constrain(throttle, 20, 100)
         
         // Ενημέρωση χρόνου για να μην την αλλάξει το failsafe του main.ts
         //last_radio_time = control.millis() 
@@ -1222,11 +1260,11 @@ namespace airbit2_GR {
         radio.sendValue("p0", pins.analogReadPin(AnalogPin.P0))
     }
 
- 
+ /*
     /**
      * Μηδενίζει τις γωνίες κλίσης (Pitch/Roll) με βάση την τρέχουσα θέση.
      * Το drone πρέπει να είναι σε απόλυτα επίπεδη επιφάνεια.
-     */
+     
     //% block="Καλιμπράρισμα"
     //% group='Συντήρηση'
     export function calibrateNow() {
@@ -1244,6 +1282,35 @@ namespace airbit2_GR {
         
         // Οπτική επιβεβαίωση
         basic.showIcon(IconNames.Yes)
+        basic.pause(500)
+        basic.clearScreen()
+    }
+*/
+
+    /**
+     * Μηδενίζει τις γωνίες κλίσης (Pitch/Roll) με βάση την τρέχουσα θέση.
+     * Το drone πρέπει να είναι σε απόλυτα επίπεδη επιφάνεια.
+    */ 
+    //% block="Καλιμπράρισμα"
+    //% group='Συντήρηση'
+    export function calibrateNow() {
+        // 1. Ενημερώνουμε τις raw τιμές των αισθητήρων
+        airbit.IMU_sensorRead()
+        
+        // 2. Υπολογίζουμε τη γωνία που δίνει το επιταχυνσιόμετρο αυτή τη στιγμή
+        // (Χωρίς το παλιό offset)
+        let rawAccPitch = (-57.295 * Math.atan2(accY, accZ))
+        let rawAccRoll = (-57.295 * Math.atan2(accX, accZ))
+        
+        // 3. Θέτουμε αυτές τις τιμές ως τα νέα offsets
+        accPitchOffset = rawAccPitch
+        accRollOffset = rawAccRoll
+        
+        // 4. Μηδενίζουμε τις imu τιμές για να "κλειδώσει" η τελεία στο κέντρο
+        imuPitch = 0
+        imuRoll = 0
+        
+        basic.showIcon(IconNames.Target)
         basic.pause(500)
         basic.clearScreen()
     }
