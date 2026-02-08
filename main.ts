@@ -998,7 +998,30 @@ namespace airbit2_GR {
     }
 
 
-    //% block="Εφαρμογή Ισχύος στα Μοτέρ"
+
+
+    /**
+     *  1. Αυτή η συνάρτηση μόνο υπολογίζει
+     * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
+     * Συγκεντρώνει τις εντολές: IMU_sensorRead, calculateAngles και stabilisePid.
+     */
+    //% block="Υπολογισμοί για σταθεροποίηση"
+    //% group='Διαρκής αποτίμηση'
+    export function stabilization() {
+        // Διάβασμα αισθητήρων
+        airbit.IMU_sensorRead()
+        // Υπολογισμός γωνιών
+        airbit.calculateAngles()
+        // Σταθεροποίηση PID αν δεν είμαστε σε λειτουργία τεστ μοτέρ
+        if (motorTesting == false) {
+            airbit.stabilisePid()  // Εδώ γίνεται ο υπολογισμός
+        }
+    }
+
+
+
+    // 2. Αυτή η συνάρτηση μόνο εκτελεί (χωρίς το PID πια)
+    //% block="Εφαρμογή υπολογισμών ισχύος στα μοτέρ"
     //% group='Διαρκής αποτίμηση'
     export function BOapplyMotorPower() {
         if (arm && stable && (mcExists && gyroExists)) {
@@ -1013,22 +1036,10 @@ namespace airbit2_GR {
     }
 
 
-    /**
-     * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
-     * Συγκεντρώνει τις εντολές: IMU_sensorRead, calculateAngles και stabilisePid.
-     */
-    //% block="Σταθεροποίηση"
-    //% group='Διαρκής αποτίμηση'
-    export function stabilization() {
-        // Διάβασμα αισθητήρων
-        airbit.IMU_sensorRead()
-        // Υπολογισμός γωνιών
-        airbit.calculateAngles()
-        // Σταθεροποίηση PID αν δεν είμαστε σε λειτουργία τεστ μοτέρ
-        if (motorTesting == false) {
-            airbit.stabilisePid()
-        }
-    }
+
+
+
+
 
 
     /**
