@@ -831,28 +831,36 @@ namespace airbit {
  */
 
 enum MoveDirection {
-    //% block="Μπροστά"
+    //% block="μπροστά"
     Forward,
-    //% block="Πίσω"
+    //% block="πίσω"
     Backward,
-    //% block="Πάνω"
+    //% block="πάνω"
     Up,
-    //% block="Κάτω"
-    Down
+    //% block="κάτω"
+    Down,
+     //% block="δεξιά"
+    Right,
+    //% block="αριστερά"
+    Left
+   
 }
 
+
+
+
 enum TurnDirection {
-    //% block="Δεξιά"
+    //% block="δεξιόστροφα"
     Right,
-    //% block="Αριστερά"
+    //% block="αριστερόστροφα"
     Left
 }
 
 
 enum ThrottleAction {
-    //% block="Αύξηση"
+    //% block="αύξηση"
     Increase,
-    //% block="Μείωση"
+    //% block="μείωση"
     Decrease
 }
 
@@ -1039,10 +1047,6 @@ namespace airbit2_GR {
 
 
 
-
-
-
-
     /**
      * Ορίζει την ισχύ των μοτέρ (ταχύτητα) σε μια συγκεκριμένη τιμή.
      * @param speed Η επιθυμητή ταχύτητα από 0 έως 100
@@ -1086,24 +1090,36 @@ namespace airbit2_GR {
 
   
 
+/**
+     * Κινεί το drone προς μια κατεύθυνση για συγκεκριμένη απόσταση (κατά προσέγγιση).
+     */
     //% block="Κινήσου %dir για %distance εκατοστά"
     //% group='Πτήση'
     //% distance.defl=50
     export function move(dir: MoveDirection, distance: number) {
-        let ms = distance * 25;
+        let ms = distance * 25; // Μετατροπή εκατοστών σε milliseconds
+        
         if (dir == MoveDirection.Forward) {
             pitch = -10
         } else if (dir == MoveDirection.Backward) {
             pitch = 10
+        } else if (dir == MoveDirection.Left) {
+            roll = -10
+        } else if (dir == MoveDirection.Right) {
+            roll = 10
         } else if (dir == MoveDirection.Up) {
-            throttle += 10
+            throttle = Math.min(throttle + 10, 80) // Μέγιστο ασφαλές throttle 80
         } else if (dir == MoveDirection.Down) {
-            throttle -= 10
+            throttle = Math.max(throttle - 10, 20) // Ελάχιστο ασφαλές throttle 20
         }
-        basic.pause(ms)
-        pitch = 0
-        throttle = Math.constrain(throttle, 0, 100)
+
+        basic.pause(ms) // Το drone κινείται για αυτό το διάστημα
+        
+        // Επαναφορά στην οριζόντια θέση
+        resetControls()
     }
+
+
 
     //% block="Στρίψε %turnDir %degrees μοίρες"
     //% group='Πτήση'
@@ -1119,6 +1135,55 @@ namespace airbit2_GR {
     }
 
   
+    /**
+     * Επαναφέρει τις εντολές κίνησης (Pitch, Roll) στο μηδέν και σταματά την περιστροφή (Yaw).
+     * Χγια να σταματήσει το drone να κινείται ή να στρίβει.
+     */
+    //% block="Επαναφορά χειριστηρίων κατεύθυνσης και στροφής"
+    //% group='Πτήση'
+    export function resetControls() {
+        pitch = 0
+        roll = 0
+        // Σταματάμε την περιστροφή ορίζοντας ως στόχο την τρέχουσα γωνία
+        yaw = imuYaw 
+    }
+
+
+    /**
+     * Εκτελεί μια τετράγωνη διαδρομή
+     */
+    //% block="Τετράγωνη πτήση πλευράς %side εκ."
+    //% group='Πτήση'
+    export function flySquare(side: number) {
+        for (let i = 0; i < 4; i++) {
+            move(MoveDirection.Forward, side)
+            basic.pause(500)
+            // Στροφή 90 μοιρών (Yaw)
+            yaw += 90 
+            basic.pause(1000)
+            //resetControls() //θα την προσθέσω αν το drone "ξεσέρνει" κατά τη στροφή ώστε να σθγουρευτώ ότι ξεκινά την επόμενη πλευρά του τετραγώνου από απόλυτα οριζόντια θέση.
+        }
+    }
+
+    /**
+     * Εκτελεί έναν κύκλο (συνδυασμός Roll και Pitch)
+     */
+    //% block="κυκλική Πτήση"
+    //% group='Πτήση'
+    export function flyCircle() {
+        // Σταδιακή αλλαγή κλίσης για ομαλό κύκλο
+        for (let angle = 0; angle <= 360; angle += 45) {
+            let radians = (angle * Math.PI) / 180
+            pitch = Math.cos(radians) * 10
+            roll = Math.sin(radians) * 10
+            basic.pause(400)
+        }
+        resetControls()
+    }
+
+
+
+
   
     /**
      * Στέλνει τα δεδομένα πτήσης και μπαταρίας στο τηλεχειριστήριο.
