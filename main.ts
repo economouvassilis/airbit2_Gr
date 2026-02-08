@@ -126,6 +126,8 @@ magicNumber = "P0.5,I0,D15,Yp3,Yi0"
 //rollPitchI = 0
 //rollPitchD = 15
 let motorSpeed = -1
+let pitchTrim = 0 // Η μεταβλητή για τη μικρορύθμιση διολίσθησης προς/πίσω του pitch
+let rollTrim = 0// Η μεταβλητή για τη μικρορύθμιση δεξιά αριστεράτου Trim
 
 
 
@@ -371,8 +373,16 @@ namespace airbit {
         gyroXdelta = (gyroX - gyroXcalibration) * looptime * -0.00000762939
         gyroYdelta = (gyroY - gyroYcalibration) * looptime * 0.00000762939
         gyroZdelta = (gyroZ - gyroZcalibration) * looptime * -0.00000762939
-        imuRoll = (gyroYdelta + imuRoll) * 0.99 + accRoll * 0.01
-        imuPitch = (gyroXdelta + imuPitch) * 0.99 + accPitch * 0.01
+        
+        //imuRoll = (gyroYdelta + imuRoll) * 0.99 + accRoll * 0.01
+        //imuPitch = (gyroXdelta + imuPitch) * 0.99 + accPitch * 0.01
+        
+        // μπορείς να ρυθμίσεις τη διολίσθηση μπρος η πίσω από πλακίδιο που επιρεάζει τη μεταβλητή ptchTrim
+        // Εφαρμογή των trims με συντελεστή ευαισθησίας 0.1
+        imuRoll = (gyroYdelta + imuRoll) * 0.99 + accRoll * 0.01 + (rollTrim * 0.1)
+        imuPitch = (gyroXdelta + imuPitch) * 0.99 + accPitch * 0.01 + (pitchTrim * 0.1)
+        
+
         // imuRoll = gyroYdelta + imuRoll
         // gyroYangle = gyroYdelta + gyroYangle
         // gyroXangle = gyroXdelta + gyroXangle
@@ -1082,17 +1092,16 @@ namespace airbit2_GR {
         imuRoll = 0
         imuYaw = 0 // Μηδενίζουμε και την περιστροφή
         
-        // 2. Οπλισμός
+        // 2. ένδειξη
+        basic.showIcon(IconNames.Yes)
+        basic.pause(1000)
+        basic.clearScreen()
+
+        // 3. Οπλισμός
         arm = 1
         stable = true
-        throttle = 25 // Ξεκινάμε με πολύ χαμηλό γκάζι (idle)
-        
-        basic.showIcon(IconNames.Yes)
-        basic.pause(500)
-        basic.clearScreen()
+        throttle = 20 // Ξεκινάμε με πολύ χαμηλό γκάζι (idle)
     }
-
-
 
 
 
@@ -1110,6 +1119,7 @@ namespace airbit2_GR {
         // Περιορισμός τιμής μεταξύ 0 και 100 για απόλυτη ασφάλεια
         throttle = Math.constrain(throttle, 0, 100)
     }
+
 
 
     /**
@@ -1238,9 +1248,6 @@ namespace airbit2_GR {
         resetControls()
     }
 
-
-
-
   
     /**
      * Στέλνει τα δεδομένα πτήσης και μπαταρίας στο τηλεχειριστήριο.
@@ -1314,6 +1321,32 @@ namespace airbit2_GR {
         basic.pause(500)
         basic.clearScreen()
     }
+
+
+
+
+    /**
+     * Ρυθμίζει ταυτόχρονα το Trim για Pitch (Εμπρός/Πίσω) και Roll (Δεξιά/Αριστερά).
+     * @param pOffset Διόρθωση Pitch (π.χ. 1, -1 ή 0 αν δεν θέλουμε αλλαγή)
+     * @param rOffset Διόρθωση Roll (π.χ. 1, -1 ή 0 αν δεν θέλουμε αλλαγή)
+     */
+    //% block="Ρύθμιση διολίσθησης (Trims): Pitch %pOffset Roll %rOffset"
+    //% group='Συντήρηση'
+    //% pOffset.defl=0 rOffset.defl=0
+    export function setTrims(pOffset: number, rOffset: number) {
+        pitchTrim += pOffset
+        rollTrim += rOffset
+        
+        // Μικρό οπτικό σήμα στην οθόνη (αναβοσβήνει ένα "σταυρό")
+        led.plotBrightness(2, 0, 100) // Πάνω τελεία
+        led.plotBrightness(4, 2, 100) // Δεξιά τελεία
+        basic.pause(50)
+        led.unplot(2, 0)
+        led.unplot(4, 2)
+    }
+
+
+
 
 
     /**
