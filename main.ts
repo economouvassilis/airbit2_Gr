@@ -892,29 +892,6 @@ namespace airbit2_GR {
         basic.showIcon(IconNames.No)
     }
 
-    /*
-    /*
-    * ΑΠΟΓΕΙΩΣΗ
-    //% block="Απογείωση στα %targetHeight εκατοστά"
-    //% targetHeight.defl=100
-    export function takeOff(targetHeight: number) {
-        arm = 1
-        // 1. Σταδιακή άνοδος μέχρι το σημείο αποκόλλησης
-        for (let i = 0; i <= 65; i++) {
-            throttle = i
-            basic.pause(30) 
-        }  
-        // 2. ΙΣΧΥΡΗ ΩΘΗΣΗ: Ανεβάζουμε στο 83 για να σιγουρέψουμε την άνοδο
-        throttle = 83 
-        // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ: Αυξάνουμε τον πολλαπλασιαστή στο 30 για το 1 μέτρο
-        let risingTime = targetHeight * 30 
-        basic.pause(risingTime)
-        // 4. ΚΡΑΤΗΜΑ (Hover): ήταν 67 και το μεγάλωσαγια να μην πέσει
-        throttle = 70 
-        //basic.showIcon(IconNames.Yes)
-    }
-    */
-
 
 
     /**
@@ -1022,7 +999,7 @@ namespace airbit2_GR {
 
     }
     
-    //% block="Έλεγχος μπαταρίας <20% με ήχο"
+    //% block="Ήχος αν μπαταρία <20%"
     //% group='Διαρκής αποτίμηση'
     export function batteryAlarm() {
         let level = airbit.batteryLevel()
@@ -1058,7 +1035,6 @@ namespace airbit2_GR {
     export function targetThrottle(speed: number) {
         // Θέτουμε τη μεταβλητή throttle απευθείας στην τιμή που θέλουμε
         throttle = speed
-        
         // Περιορισμός τιμής μεταξύ 0 και 100 για απόλυτη ασφάλεια
         throttle = Math.constrain(throttle, 0, 100)
     }
@@ -1078,7 +1054,7 @@ namespace airbit2_GR {
         }
         
         // Ασφάλεια: Περιορισμός τιμής
-        throttle = Math.constrain(throttle, 45, 100)
+        throttle = Math.constrain(throttle, 30, 100)
         
         // Ενημέρωση χρόνου για να μην την αλλάξει το failsafe του main.ts
         //last_radio_time = control.millis() 
@@ -1098,7 +1074,8 @@ namespace airbit2_GR {
     //% group='Πτήση'
     //% distance.defl=30
     export function move(dir: MoveDirection, distance: number) {
-        let ms = distance * 25; // Μετατροπή εκατοστών σε milliseconds
+        let ms = distance * 25;
+        let originalThrottle = throttle; // Αποθηκεύουμε το τρέχον γκάζι
         
         if (dir == MoveDirection.Forward) {
             pitch = -10
@@ -1109,14 +1086,19 @@ namespace airbit2_GR {
         } else if (dir == MoveDirection.Right) {
             roll = 10
         } else if (dir == MoveDirection.Up) {
-            throttle = Math.min(throttle + 10, 80) // Μέγιστο ασφαλές throttle 80
+            // Αυξάνουμε προσωρινά για την άνοδο
+            throttle = Math.min(originalThrottle + 10, 90) 
         } else if (dir == MoveDirection.Down) {
-            throttle = Math.max(throttle - 10, 20) // Ελάχιστο ασφαλές throttle 20
+            // Μειώνουμε προσωρινά για την κάθοδο
+            throttle = Math.max(originalThrottle - 10, 10)
         }
 
-        basic.pause(ms) // Το drone κινείται για αυτό το διάστημα
+        basic.pause(ms) 
         
-        // Επαναφορά στην οριζόντια θέση
+        // Επαναφορά γκαζιού στην τιμή που είχε πριν την κίνηση
+        throttle = originalThrottle 
+        
+        // Επαναφορά κλίσεων (Pitch/Roll/Yaw)
         resetControls()
     }
 
@@ -1207,6 +1189,33 @@ namespace airbit2_GR {
     }
 
  
+    /**
+     * Μηδενίζει τις γωνίες κλίσης (Pitch/Roll) με βάση την τρέχουσα θέση.
+     * Το drone πρέπει να είναι σε απόλυτα επίπεδη επιφάνεια.
+     */
+    //% block="Καλιμπράρισμα"
+    //% group='Συντήρηση'
+    export function calibrateNow() {
+        // Διαβάζουμε τους αισθητήρες για να πάρουμε τις τρέχουσες τιμές
+        airbit.IMU_sensorRead()
+        
+        // Ορίζουμε τις τρέχουσες τιμές ως τα νέα offsets
+        // Υποθέτουμε ότι οι μεταβλητές pitchRaw και rollRaw ενημερώνονται από την IMU_sensorRead
+        calibratedPitch = airbit.getPitch()
+        calibratedRoll = airbit.getRoll()
+        
+        // Μηδενίζουμε και τις εντολές κίνησης για καθαρή αρχή
+        pitch = 0
+        roll = 0
+        
+        // Εμφάνιση ένδειξης επιτυχίας στην οθόνη του drone
+        basic.showIcon(IconNames.Yes)
+        basic.pause(500)
+        basic.clearScreen()
+    }
+
+
+
     /**
      * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
      */
