@@ -1196,24 +1196,23 @@ namespace airbit2_GR {
     //% block="Καλιμπράρισμα"
     //% group='Συντήρηση'
     export function calibrateNow() {
-        // Διαβάζουμε τους αισθητήρες για να πάρουμε τις τρέχουσες τιμές
+        // Διαβάζουμε τους αισθητήρες για να δούμε την τρέχουσα κλίση (με τα παλιά offsets)
         airbit.IMU_sensorRead()
+        airbit.calculateAngles() 
         
-        // Ορίζουμε τις τρέχουσες τιμές ως τα νέα offsets
-        // Υποθέτουμε ότι οι μεταβλητές pitchRaw και rollRaw ενημερώνονται από την IMU_sensorRead
-        calibratedPitch = airbit.getPitch()
-        calibratedRoll = airbit.getRoll()
+        // Ενημερώνουμε τα offsets προσθέτοντας την τρέχουσα "λάθος" γωνία
+        calibratedPitch += imuPitch
+        calibratedRoll += imuRoll
         
-        // Μηδενίζουμε και τις εντολές κίνησης για καθαρή αρχή
+        // Μηδενίζουμε τις εντολές χειριστηρίου
         pitch = 0
         roll = 0
         
-        // Εμφάνιση ένδειξης επιτυχίας στην οθόνη του drone
+        // Οπτική επιβεβαίωση
         basic.showIcon(IconNames.Yes)
         basic.pause(500)
         basic.clearScreen()
     }
-
 
 
     /**
