@@ -952,9 +952,11 @@ namespace airbit2_GR {
         for (let i = 66; i <= 83; i++) {
             throttle = i
             //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
-            basic.pause(20) // Γρήγορη αλλά ομαλή αύξηση
+            basic.pause(10) // Γρήγορη αλλά ομαλή αύξηση
         }
         
+        hrottle = 85
+
         // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ
         let risingTime = targetHeight * 30 
         basic.pause(risingTime)
@@ -962,7 +964,7 @@ namespace airbit2_GR {
         // 4. ΟΜΑΛΗ ΜΕΤΑΒΑΣΗ ΣΤΟ HOVER (Smooth Leveling)
         // Κατεβάζουμε σιγά-σιγά από το 83 στο 70 (hover) 
         // για να μην "βουτήξει" το drone μόλις φτάσει στο ύψος στόχο
-        for (let i = 83; i >= 70; i--) {
+        for (let i = 85; i >= 70; i--) {
             throttle = i
             //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
             basic.pause(40) // Δίνουμε χρόνο στους έλικες να σταθεροποιηθούν
