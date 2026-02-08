@@ -317,7 +317,6 @@ namespace airbit {
     //% blockID=airbit_battery_calculation_simple
     //% block="Battery milliVolts"
     //% group='Battery management'
-
     export function batterymVolt() {
         return Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR)
 
@@ -886,7 +885,7 @@ enum ThrottleAction {
 namespace airbit2_GR {
 
     //% block="Αρχικοποίηση"
-    //% group="Μία φορά στην αρχή"
+    //% group='Μία φορά στην αρχή'
     export function initialize() {
         airbit.IMU_Start()
         basic.pause(100)
@@ -900,7 +899,7 @@ namespace airbit2_GR {
      * Σβήνει ακαριαία όλα τα μοτέρ και αφοπλίζει το drone.
      */
     //% block="Επείγουσα διακοπή"
-    //% group="Πτήση"
+    //% group='Πτήση'
     //% color=#ff0000
     export function emergencyStop() {
         arm = 0 // Θέτει τη μεταβλητή arm σε 0 ακαριαία
@@ -943,7 +942,7 @@ namespace airbit2_GR {
     * ΑΠΟΓΕΙΩΣΗ - Ομαλή έκδοση
     */
     //% block="Απογείωση στα %targetHeight εκατοστά"
-    //% group="Πτήση"
+    //% group='Πτήση'
     //% targetHeight.defl=100
     export function takeOff(targetHeight: number) {
         arm = 1
@@ -979,7 +978,7 @@ namespace airbit2_GR {
 
 
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
-    //% group="Πτήση"
+    //% group='Πτήση'
     export function land(currentHeight: number) {
         // Ξεκινάμε από το τρέχον throttle και κατεβαίνουμε μέχρι το 50
         // Χρησιμοποιούμε την τρέχουσα τιμή της μεταβλητής throttle ως σημείο εκκίνησης
@@ -1003,7 +1002,7 @@ namespace airbit2_GR {
      * Συγκεντρώνει τις εντολές: IMU_sensorRead, calculateAngles και stabilisePid.
      */
     //% block="Σταθεροποίηση"
-    //% group="Διαρκής αποτίμηση"
+    //% group='Διαρκής αποτίμηση'
     export function stabilization() {
         // Διάβασμα αισθητήρων
         airbit.IMU_sensorRead()
@@ -1021,7 +1020,7 @@ namespace airbit2_GR {
      * @param speed Η επιθυμητή ταχύτητα από 0 έως 100
      */
     //% block="Όρισε ταχύτητα σε %speed"
-    //% group="Πτήση"
+    //% group='Πτήση'
     //% speed.min=0 speed.max=100
     export function targetThrottle(speed: number) {
         // Θέτουμε τη μεταβλητή throttle απευθείας στην τιμή που θέλουμε
@@ -1036,7 +1035,7 @@ namespace airbit2_GR {
      * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
      */
     //% block="Ταχύτητα %action κατά %amount"
-    //% group="Πτήση"
+    //% group='Πτήση'
     //% amount.min=0 amount.max=100
     export function setThrottle(action: ThrottleAction, amount: number) {
         if (action == ThrottleAction.Increase) {
@@ -1060,7 +1059,7 @@ namespace airbit2_GR {
   
 
     //% block="Κινήσου %dir για %distance εκατοστά"
-    //% group="Πτήση"
+    //% group='Πτήση'
     //% distance.defl=50
     export function move(dir: MoveDirection, distance: number) {
         let ms = distance * 25;
@@ -1079,7 +1078,7 @@ namespace airbit2_GR {
     }
 
     //% block="Στρίψε %turnDir %degrees μοίρες"
-    //% group="Πτήση"
+    //% group='Πτήση'
     //% degrees.min=0 degrees.max=360
     export function turn(turnDir: TurnDirection, degrees: number) {
         let turn_ms = degrees * 5;
@@ -1092,7 +1091,7 @@ namespace airbit2_GR {
     }
 
     //% block="Πληροφορίες πτήσης"
-    //% group="Διαρκής αποτίμηση"
+    //% group='Διαρκής αποτίμηση'
     export function showInfo() {
         basic.clearScreen()
         airbit.smartBar(4, airbit.batteryLevel())
@@ -1102,7 +1101,7 @@ namespace airbit2_GR {
     }
 
     //% block="Ενημέρωση ισχύος μοτέρ"
-    //% group="Διαρκής αποτίμηση"
+    //% group='Διαρκής αποτίμηση'
     export function updateMotors() {
         if (arm && stable) {
             airbit.MotorSpeed(motorA, motorB, motorC, motorD)
@@ -1111,10 +1110,18 @@ namespace airbit2_GR {
         }
     }
 
+
+
+    //% block="Υπολογισμός μπαταρίας"
+    //% group='Διαρκής αποτίμηση'
+    export function bobatteryCalculation() {
+        batterymVoltSmooth = Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR * 0.1 + batterymVoltSmooth * 0.9)
+
+    }
     
 
     //% block="Έλεγχος χαμηλής μπαταρίας με ηχητική προειδοποίηση"
-    //% group="Ελεγχοι"
+    //% group='Διαρκής αποτίμηση'
     export function batteryAlarm() {
         let level = airbit.batteryLevel()
         // Αν το drone είναι οπλισμένο (πετάει) και η μπαταρία είναι κάτω από 20%
@@ -1126,11 +1133,12 @@ namespace airbit2_GR {
     }
 
 
+
     /**
      * Στέλνει τα δεδομένα πτήσης και μπαταρίας στο τηλεχειριστήριο.
      */
     //% block="Αποστολή Τηλεμετρίας στο χειριστήριο"
-    //% group="Επικοινωνία"
+    //% group='Επικοινωνία'
     //% weight=80
     export function sendTelemetry() {
         radio.sendValue("p", rollPitchP)
@@ -1149,37 +1157,14 @@ namespace airbit2_GR {
      * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
      */
     //% block="Τρέχουσα ταχύτητα"
-    //% group="Συντήρηση"
+    //% group='Συντήρηση'
     export function getCurrentThrottle(): number {
         return throttle
     }
 
 
-
-    //% block="Υπολογισμός μπαταρίας"
-    //% group="Συντήρηση"
-    export function bobatteryCalculation() {
-        // 1. Διάβασμα της θύρας P0 (τιμές 0-1023)
-        let rawADC = pins.analogReadPin(AnalogPin.P0)
-        
-        // 2. Μετατροπή σε Millivolt (mV)
-        // Ο συντελεστής 5.94 είναι ο εργοστασιακός για το Air:bit
-        let currentVolt = rawADC * 5.94
-        
-        // 3. Εφαρμογή απλού φίλτρου (Smoothing) 
-        // Για να μην "πηδάει" η ένδειξη όταν δίνεις απότομα γκάζι
-        if (myBatteryMV == 0) {
-            myBatteryMV = currentVolt
-        } else {
-            myBatteryMV = (myBatteryMV * 0.9) + (currentVolt * 0.1)
-        }
-
-        // 4. Ενημέρωση της παγκόσμιας μεταβλητής που χρησιμοποιεί το σύστημα
-        batterymVoltSmooth = myBatteryMV
-    }
-
     //% block="Ποσοστό μπαταρίας %"
-    //% group="Συντήρηση"
+    //% group='Συντήρηση'
     export function bobaterypersent(): number {
         // Υπολογισμός ποσοστού: 3400mV = 0%, 4100mV = 100%
         let percent = Math.map(batterymVoltSmooth, 3400, 4100, 0, 100)
@@ -1187,16 +1172,23 @@ namespace airbit2_GR {
     }
 
     //% block="Επίπεδο μπαταρίας"
-    //% group="Συντήρηση"
+    //% group='Συντήρηση'
     export function batteryPercentage(): number {
         return airbit.batteryLevel()
+    }
+
+   
+    //% block="milliVolts μπαταρίας"
+    //% group='Συντήρηση'
+    export function bobatterymVolt() {
+        return Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR)
+
     }
 
 
 
 
 
-    
 
 }
 
