@@ -1096,10 +1096,7 @@ namespace airbit2_GR {
         led.plot(ledX, ledY)
     }
 
-    //% block="Επίπεδο Μπαταρίας"
-    export function batteryPercentage(): number {
-        return airbit.batteryLevel()
-    }
+    
 
     //% block="Έλεγχος χαμηλής μπαταρίας με ηχητική προειδοποίηση"
     export function batteryAlarm() {
@@ -1139,6 +1136,46 @@ namespace airbit2_GR {
             airbit.MotorSpeed(0, 0, 0, 0)
         }
     }
+
+
+//% block="Υπολογισμός μπαταρίας"
+    //% group="Συντήρηση"
+    export function bobatteryCalculation() {
+        // 1. Διάβασμα της θύρας P0 (τιμές 0-1023)
+        let rawADC = pins.analogReadPin(AnalogPin.P0)
+        
+        // 2. Μετατροπή σε Millivolt (mV)
+        // Ο συντελεστής 5.94 είναι ο εργοστασιακός για το Air:bit
+        let currentVolt = rawADC * 5.94
+        
+        // 3. Εφαρμογή απλού φίλτρου (Smoothing) 
+        // Για να μην "πηδάει" η ένδειξη όταν δίνεις απότομα γκάζι
+        if (myBatteryMV == 0) {
+            myBatteryMV = currentVolt
+        } else {
+            myBatteryMV = (myBatteryMV * 0.9) + (currentVolt * 0.1)
+        }
+
+        // 4. Ενημέρωση της παγκόσμιας μεταβλητής που χρησιμοποιεί το σύστημα
+        batterymVoltSmooth = myBatteryMV
+    }
+
+    //% block="Ποσοστό μπαταρίας %"
+    //% group="Συντήρηση"
+    export function bobaterypersent(): number {
+        // Υπολογισμός ποσοστού: 3400mV = 0%, 4100mV = 100%
+        let percent = Math.map(batterymVoltSmooth, 3400, 4100, 0, 100)
+        return Math.constrain(Math.round(percent), 0, 100)
+    }
+
+    //% block="Επίπεδο μπαταρίας"
+    //% group="Συντήρηση"
+    export function batteryPercentage(): number {
+        return airbit.batteryLevel()
+    }
+
+}
+
 
 
 
