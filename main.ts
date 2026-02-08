@@ -858,9 +858,9 @@ enum TurnDirection {
 
 
 enum ThrottleAction {
-    //% block="αύξηση"
+    //% block="Αύξησε"
     Increase,
-    //% block="μείωση"
+    //% block="Μείωσε"
     Decrease
 }
 
@@ -1066,7 +1066,7 @@ namespace airbit2_GR {
     /**
      * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
      */
-    //% block="Ταχύτητα %action κατά %amount"
+    //% block="%action ταχύτητα κατά %amount"
     //% group='Πτήση'
     //% amount.min=0 amount.max=100
     export function setThrottle(action: ThrottleAction, amount: number) {
@@ -1090,10 +1090,10 @@ namespace airbit2_GR {
 
   
 
-/**
+    /**
      * Κινεί το drone προς μια κατεύθυνση για συγκεκριμένη απόσταση (κατά προσέγγιση).
      */
-    //% block="Κινήσου %dir για %distance εκατοστά"
+    //% block="Πτήση %dir για %distance εκ."
     //% group='Πτήση'
     //% distance.defl=50
     export function move(dir: MoveDirection, distance: number) {
@@ -1152,7 +1152,7 @@ namespace airbit2_GR {
     /**
      * Εκτελεί μια τετράγωνη διαδρομή
      */
-    //% block="Τετράγωνη πτήση πλευράς %side εκ."
+    //% block="Οριζόντια πτήση σε τετράγωνο πλευράς %side εκ."
     //% group='Πτήση'
     export function flySquare(side: number) {
         for (let i = 0; i < 4; i++) {
@@ -1168,7 +1168,7 @@ namespace airbit2_GR {
     /**
      * Εκτελεί έναν κύκλο (συνδυασμός Roll και Pitch)
      */
-    //% block="κυκλική Πτήση"
+    //% block="Οριζόντια κυκλική πτήση"
     //% group='Πτήση'
     export function flyCircle() {
         // Σταδιακή αλλαγή κλίσης για ομαλό κύκλο
