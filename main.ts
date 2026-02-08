@@ -899,7 +899,8 @@ namespace airbit2_GR {
     /**
      * Σβήνει ακαριαία όλα τα μοτέρ και αφοπλίζει το drone.
      */
-    //% block="Επείγουσα Διακοπή"
+    //% block="Επείγουσα διακοπή"
+    //% group="Πτήση"
     //% color=#ff0000
     export function emergencyStop() {
         arm = 0 // Θέτει τη μεταβλητή arm σε 0 ακαριαία
@@ -936,12 +937,14 @@ namespace airbit2_GR {
 
     */
 
+
+
     /**
     * ΑΠΟΓΕΙΩΣΗ - Ομαλή έκδοση
     */
     //% block="Απογείωση στα %targetHeight εκατοστά"
-    //% targetHeight.defl=100
     //% group="Πτήση"
+    //% targetHeight.defl=100
     export function takeOff(targetHeight: number) {
         arm = 1
         
@@ -1054,15 +1057,7 @@ namespace airbit2_GR {
     }
 
 
-    /**
-     * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
-     */
-    //% block="Τρέχουσα ταχύτητα"
-    //% group="Πληροφόρηση"
-    export function getCurrentThrottle(): number {
-        return throttle
-    }
-
+  
 
     //% block="Κινήσου %dir για %distance εκατοστά"
     //% group="Πτήση"
@@ -1096,7 +1091,7 @@ namespace airbit2_GR {
         basic.pause(turn_ms)
     }
 
-    //% block="Προβολή Πληροφοριών"
+    //% block="Πληροφορίες πτήσης"
     //% group="Διαρκής αποτίμηση"
     export function showInfo() {
         basic.clearScreen()
@@ -1104,6 +1099,16 @@ namespace airbit2_GR {
         let ledX = Math.map(imuRoll, -15, 15, 0, 4)
         let ledY = Math.map(imuPitch, -15, 15, 4, 0)
         led.plot(ledX, ledY)
+    }
+
+    //% block="Ενημέρωση ισχύος μοτέρ"
+    //% group="Διαρκής αποτίμηση"
+    export function updateMotors() {
+        if (arm && stable) {
+            airbit.MotorSpeed(motorA, motorB, motorC, motorD)
+        } else {
+            airbit.MotorSpeed(0, 0, 0, 0)
+        }
     }
 
     
@@ -1139,18 +1144,19 @@ namespace airbit2_GR {
         radio.sendValue("p0", pins.analogReadPin(AnalogPin.P0))
     }
 
-    //% block="Ενημέρωση ισχύος μοτέρ"
-    //% group="Διαρκής αποτίμηση"
-    export function updateMotors() {
-        if (arm && stable) {
-            airbit.MotorSpeed(motorA, motorB, motorC, motorD)
-        } else {
-            airbit.MotorSpeed(0, 0, 0, 0)
-        }
+ 
+    /**
+     * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
+     */
+    //% block="Τρέχουσα ταχύτητα"
+    //% group="Συντήρηση"
+    export function getCurrentThrottle(): number {
+        return throttle
     }
 
 
-//% block="Υπολογισμός μπαταρίας"
+
+    //% block="Υπολογισμός μπαταρίας"
     //% group="Συντήρηση"
     export function bobatteryCalculation() {
         // 1. Διάβασμα της θύρας P0 (τιμές 0-1023)
@@ -1187,6 +1193,10 @@ namespace airbit2_GR {
     }
 
 
+
+
+
+    
 
 }
 
