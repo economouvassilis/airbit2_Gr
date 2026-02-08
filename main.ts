@@ -1037,6 +1037,39 @@ namespace airbit2_GR {
 
 
 
+    //% block="Υπολογισμός μπαταρίας"
+    //% group='Διαρκής αποτίμηση'
+    export function bobatteryCalculation() {
+        batterymVoltSmooth = Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR * 0.1 + batterymVoltSmooth * 0.9)
+
+    }
+    
+
+    //% block="Έλεγχος μπαταρίας <20% με ήχο"
+    //% group='Διαρκής αποτίμηση'
+    export function batteryAlarm() {
+        let level = airbit.batteryLevel()
+        // Αν το drone είναι οπλισμένο (πετάει) και η μπαταρία είναι κάτω από 20%
+        if (level < 20 ) {
+            music.setVolume(255)
+            music.playTone(Note.C, music.beat(BeatFraction.Quarter))
+            music.playTone(Note.G, music.beat(BeatFraction.Quarter))
+        }
+    }
+
+    //% block="Πληροφορίες πτήσης στο LED Panel"
+    //% group='Συντήρηση'
+    export function showInfo() {
+        basic.clearScreen()
+        airbit.smartBar(4, airbit.batteryLevel())
+        let ledX = Math.map(imuRoll, -15, 15, 0, 4)
+        let ledY = Math.map(imuPitch, -15, 15, 4, 0)
+        led.plot(ledX, ledY)
+    }
+
+  
+
+
 
 
 
@@ -1117,49 +1150,8 @@ namespace airbit2_GR {
         basic.pause(turn_ms)
     }
 
-    //% block="Πληροφορίες πτήσης"
-    //% group='Διαρκής αποτίμηση'
-    export function showInfo() {
-        basic.clearScreen()
-        airbit.smartBar(4, airbit.batteryLevel())
-        let ledX = Math.map(imuRoll, -15, 15, 0, 4)
-        let ledY = Math.map(imuPitch, -15, 15, 4, 0)
-        led.plot(ledX, ledY)
-    }
-
-    //% block="Ενημέρωση ισχύος μοτέρ"
-    //% group='Διαρκής αποτίμηση'
-    export function updateMotors() {
-        if (arm && stable) {
-            airbit.MotorSpeed(motorA, motorB, motorC, motorD)
-        } else {
-            airbit.MotorSpeed(0, 0, 0, 0)
-        }
-    }
-
-
-
-    //% block="Υπολογισμός μπαταρίας"
-    //% group='Διαρκής αποτίμηση'
-    export function bobatteryCalculation() {
-        batterymVoltSmooth = Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR * 0.1 + batterymVoltSmooth * 0.9)
-
-    }
-    
-
-    //% block="Έλεγχος χαμηλής μπαταρίας με ηχητική προειδοποίηση"
-    //% group='Διαρκής αποτίμηση'
-    export function batteryAlarm() {
-        let level = airbit.batteryLevel()
-        // Αν το drone είναι οπλισμένο (πετάει) και η μπαταρία είναι κάτω από 20%
-        if (level < 20 ) {
-            music.setVolume(255)
-            music.playTone(Note.C, music.beat(BeatFraction.Quarter))
-            music.playTone(Note.G, music.beat(BeatFraction.Quarter))
-        }
-    }
-
-
+  
+  
 
     /**
      * Στέλνει τα δεδομένα πτήσης και μπαταρίας στο τηλεχειριστήριο.
