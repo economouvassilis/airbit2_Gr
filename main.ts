@@ -930,7 +930,7 @@ namespace airbit2_GR {
     }
 
     */
-   
+
     /**
     * ΑΠΟΓΕΙΩΣΗ - Ομαλή έκδοση
     */
@@ -976,7 +976,7 @@ namespace airbit2_GR {
         // Χρησιμοποιούμε την τρέχουσα τιμή της μεταβλητής throttle ως σημείο εκκίνησης
         for (let j = throttle; j >= 50; j--) {
             throttle = j
-            airbit.MotorSpeed(throttle, throttle, throttle, throttle) // Ενημέρωση των μοτέρ
+            //airbit.MotorSpeed(throttle, throttle, throttle, throttle) // Ενημέρωση των μοτέρ
             
             // Ο χρόνος παύσης προσαρμόζεται ώστε η κάθοδος να είναι ομαλή
             // Αν το ύψος είναι μεγάλο, η κάθοδος διαρκεί περισσότερο
