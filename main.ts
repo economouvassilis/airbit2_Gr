@@ -1105,7 +1105,8 @@ namespace airbit2_GR {
     export function batteryAlarm() {
         let level = airbit.batteryLevel()
         // Αν το drone είναι οπλισμένο (πετάει) και η μπαταρία είναι κάτω από 20%
-        if (level < 20 && arm == 1) {
+        if (level < 20 ) {
+            music.setVolume(255)
             music.playTone(Note.C, music.beat(BeatFraction.Quarter))
             music.playTone(Note.G, music.beat(BeatFraction.Quarter))
     }
