@@ -1451,7 +1451,7 @@ function expo (inp: number) {
 
 
 
-
+/*
 
 
 // Καλούμε την ελληνική αρχικοποίηση
@@ -1502,3 +1502,4 @@ basic.forever(function () {
 basic.forever(function () {
     mainLoop()
 })
+*/    
