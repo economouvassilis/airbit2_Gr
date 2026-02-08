@@ -147,7 +147,7 @@ let motorSpeed = -1
 mcExists = false
 gyroExists = false
 stable = true
-let radioGroup = 7
+let radioGroup = 1
 imuPitch = 0
 imuRoll = 0
 batterymVoltSmooth = 3700
@@ -996,6 +996,22 @@ namespace airbit2_GR {
         throttle = 0
         airbit.MotorSpeed(0, 0, 0, 0)
     }
+
+
+    //% block="Εφαρμογή Ισχύος στα Μοτέρ"
+    //% group='Διαρκής αποτίμηση'
+    export function BOapplyMotorPower() {
+        if (arm && stable && (mcExists && gyroExists)) {
+            if (throttle == 0) {
+                airbit.MotorSpeed(5, 5, 5, 5); // Idle
+            } else {
+                airbit.MotorSpeed(motorA, motorB, motorC, motorD);
+            }
+        } else {
+            airbit.MotorSpeed(0, 0, 0, 0);
+        }
+    }
+
 
     /**
      * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
