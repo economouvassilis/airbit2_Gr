@@ -1113,6 +1113,45 @@ namespace airbit2_GR {
 }
 
 
+    /**
+     * Στέλνει τα δεδομένα πτήσης και μπαταρίας στο τηλεχειριστήριο.
+     */
+    //% block="Αποστολή Τηλεμετρίας στο χειριστήριο"
+    //% group="Επικοινωνία"
+    //% weight=80
+    export function sendTelemetry() {
+        radio.sendValue("p", rollPitchP)
+        radio.sendValue("i", rollPitchI)
+        radio.sendValue("d", rollPitchD)
+        radio.sendValue("t", radioReceivedTime)
+        radio.sendValue("R2", roll)
+        radio.sendValue("yp", yawP)
+        radio.sendValue("yd", yawD)
+        radio.sendValue("v", batterymVoltSmooth)
+        radio.sendValue("p0", pins.analogReadPin(AnalogPin.P0))
+    }
+
+    //% block="Ενημέρωση ισχύος μοτέρ"
+    export function updateMotors() {
+        if (arm && stable) {
+            airbit.MotorSpeed(motorA, motorB, motorC, motorD)
+        } else {
+            airbit.MotorSpeed(0, 0, 0, 0)
+        }
+    }
+
+
+
+
+
+
+
+}
+
+
+
+
+
 
 
 }
@@ -1297,6 +1336,7 @@ input.onButtonPressed(Button.A, function () {
         mode = 6
     }
 })
+
 function radioSendData () {
     radio.sendValue("p", rollPitchP)
     radio.sendValue("i", rollPitchI)
