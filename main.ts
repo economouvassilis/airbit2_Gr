@@ -1,6 +1,7 @@
 /**
- * Air:bit 2 - Πλήρες Κεντρικό Αρχείο (Συνδυασμένο)
- * Διατηρεί όλες τις αυθεντικές λειτουργίες και ενσωματώνει τις ελληνικές εντολές.
+ * Βασίλης Οικονόμου 7/2/2026
+ * Air:bit 2 - Πλήρες  Αρχείο (Συνδυασμένο)
+ * Διατηρεί όλες τις αυθεντικές λειτουργίες και ενσωματώνει και τις ελληνικές εντολές.
  */
 
 
@@ -142,8 +143,6 @@ let motorSpeed = -1
 
 
 
-
-
 // --- INITIALIZATION ---
 mcExists = false
 gyroExists = false
@@ -167,6 +166,11 @@ expoFactor = 45 * 45 / (45 - 45 / expoSetting)
 radio.setGroup(radioGroup)
 i2crr.setI2CPins(DigitalPin.P2, DigitalPin.P1)
 basic.pause(100)
+
+
+
+
+
 
 
 
@@ -943,19 +947,17 @@ namespace airbit2_GR {
         // Ανεβαίνουμε ομαλά μέχρι το σημείο που το drone ετοιμάζεται να σηκωθεί
         for (let i = 0; i <= 65; i++) {
             throttle = i
-            //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
-            basic.pause(30) 
+            basic.pause(40) 
         }
         
         // 2. ΟΜΑΛΗ ΩΘΗΣΗ (Transition to Climb)
         // Αντί για throttle = 83, ανεβαίνουμε σταδιακά για να μην "κλωτσήσει"
         for (let i = 66; i <= 83; i++) {
             throttle = i
-            //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
-            basic.pause(10) // Γρήγορη αλλά ομαλή αύξηση
+            basic.pause(20) // Γρήγορη αλλά ομαλή αύξηση
         }
         
-        throttle = 85
+        throttle = 84
 
         // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ
         let risingTime = targetHeight * 30 
@@ -964,9 +966,8 @@ namespace airbit2_GR {
         // 4. ΟΜΑΛΗ ΜΕΤΑΒΑΣΗ ΣΤΟ HOVER (Smooth Leveling)
         // Κατεβάζουμε σιγά-σιγά από το 83 στο 70 (hover) 
         // για να μην "βουτήξει" το drone μόλις φτάσει στο ύψος στόχο
-        for (let i = 85; i >= 72; i--) {
+        for (let i = 84; i >= 72; i--) {
             throttle = i
-            //airbit.MotorSpeed(throttle, throttle, throttle, throttle)
             basic.pause(40) // Δίνουμε χρόνο στους έλικες να σταθεροποιηθούν
         }
     }
@@ -1099,6 +1100,20 @@ namespace airbit2_GR {
     export function batteryPercentage(): number {
         return airbit.batteryLevel()
     }
+
+    //% block="Έλεγχος χαμηλής μπαταρίας με ηχητική προειδοποίηση"
+    export function batteryAlarm() {
+        let level = airbit.batteryLevel()
+        // Αν το drone είναι οπλισμένο (πετάει) και η μπαταρία είναι κάτω από 20%
+        if (level < 20 && arm == 1) {
+            music.playTone(Note.C, music.beat(BeatFraction.Quarter))
+            music.playTone(Note.G, music.beat(BeatFraction.Quarter))
+    }
+}
+
+
+
+
 }
 
 
@@ -1152,6 +1167,8 @@ function JoystickDeadBand () {
         pitch = 0
     }
 }
+
+
 function screen () {
     if (pins.analogReadPin(AnalogPin.P0) > 780) {
         if (pins.analogReadPin(AnalogPin.P0) > 950) {
@@ -1209,6 +1226,8 @@ function screen () {
         }
     }
 }
+
+
 function mainLoop () {
     while (true) {
         /*
