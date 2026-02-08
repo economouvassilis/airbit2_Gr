@@ -37,12 +37,10 @@ let batteryVolt = 0
 let imuYaw = 0
 let baroExists = false
 
-
 let imuPitch: number
 let imuRoll: number
 let arm: number
 let throttle: number
-
 let BATTERY_FACTOR = 5.94
 
 let gyroReturnId = 0
@@ -90,7 +88,6 @@ let accPitch = 0
 let batteryLev = 0
 let last_radio_time: number;
 
-
 let PCA_REG_LEDUOT = 8
 let PCA_REG_SLAVEADR = 98
 let PCA_REG_MODE1 = 0
@@ -109,7 +106,6 @@ let gyroXangle = 0
 let gyroZangle = 0
 let tuning = 0
 let PCA_REG_MODE2_CONFIG = 5        // Non-inverted: Open Drain: = %00001(1), Totem: = %00101(5), Inverted: Totem = %10101(21), Open drain: = %10001(17)
-
 let IMU_REG_CONFIG = 1          // 0x6b
 let IMU_PWR_MGMT_1 = 107        // 0x6b
 let IMU_PWR_MGMT_2 = 108        // 0x6B
@@ -129,7 +125,6 @@ magicNumber = "P0.5,I0,D15,Yp3,Yi0"
 //rollPitchP = 0.5
 //rollPitchI = 0
 //rollPitchD = 15
-
 let motorSpeed = -1
 
 
@@ -203,13 +198,11 @@ namespace airbit {
     * Draw a vertical bar with gradients for prescicion
     * X = 0..4 x position on screen, amount = 0..100
     */
-
     //% blockID=airbit_smart_bar
     //% block="Smart Bar $x $amount"
     //% group='Screen'
     //% x.min = 0 x.max=4
     //% amount.min = 0 amount.max = 100
-
     export function smartBar(x: number, amount: number) {
         for (let index = 0; index <= amount / 20; index++) {
             led.plot(x, 4 - index)
@@ -220,7 +213,6 @@ namespace airbit {
     /**
      * Initialise Barometer
      */
-
     //% blockID=airbit_start_baro
     //% block="Start Barometer"
     //% group='Control'
@@ -251,11 +243,9 @@ namespace airbit {
     /**
      * Erase PID registers
      */
-
     //% blockID=airbit_clean_reg
     //% block="Clean Registers"
     //% group='Control'
-
     export function cleanReg() {
         rollDiff = 0
         pitchDiff = 0
@@ -290,7 +280,6 @@ namespace airbit {
     //% blockID=airbit_battery_level
     //% block="Battery Level"
     //% group='Battery management'
-
     export function batteryLevel() {
         batteryCalculation()
         return Math.map(batterymVoltSmooth, 3400, 4200, 0, 100)
@@ -300,11 +289,9 @@ namespace airbit {
     /**
     *   Battery calculation with smoothing (low pass filter)
     */
-
     //% blockID=airbit_battery_calculation
     //% block="Battery Calculation"
     //% group='Battery management'
-
     export function batteryCalculation() {
         batterymVoltSmooth = Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR * 0.1 + batterymVoltSmooth * 0.9)
 
@@ -313,7 +300,6 @@ namespace airbit {
     /**
        Battery calculation (no smoothing) 
     */
-
     //% blockID=airbit_battery_calculation_simple
     //% block="Battery milliVolts"
     //% group='Battery management'
@@ -332,7 +318,6 @@ namespace airbit {
     //% blockID=airbit_read_pca
     //% block="Read Motor Controller"
     //% group='System'
-
     export function readPCA(num: number) {
         pins.i2cWriteNumber(
             PCA_REG_SLAVEADR,
@@ -425,9 +410,7 @@ namespace airbit {
     //% m1.min=0 m1.max=255
     //% m2.min=0 m2.max=255
     //% m3.min=0 m3.max=255
-
     //% group='Control'
-
     export function MotorSpeed(m0: number, m1: number, m2: number, m3: number) {
         pins.i2cWriteNumber(
             PCA_REG_SLAVEADR,
@@ -461,7 +444,6 @@ namespace airbit {
     /*
        Start and setup the Gyro/Accelereometer sensor
     */
-
     //% blockID=airbit_start_imu
     //% block="Start Gyro/Acc"
     //% group='Control'
@@ -548,7 +530,6 @@ namespace airbit {
     /*
       Write to the motor controller
     */
-
     //% blockID=airbit_write_pca
     //% block="Write PCA"
     //% group='System'
@@ -592,7 +573,6 @@ namespace airbit {
     /**
      * Read gyro and acceleration from sensor
      */
-
     //% blockID=airbit_read_imu
     //% block="Read Gyro/Acc"
     //% group='Control'
@@ -636,7 +616,6 @@ namespace airbit {
     //% blockID=airbit_start_pca
     //% block="Start Motor Controller"
     //% group='Control'
-
     export function PCA_Start() {
         PCA_Write(PCA_REG_MODE1, 128)
         PCA_Write(PCA_REG_MODE2, PCA_REG_MODE2_CONFIG)
@@ -666,23 +645,14 @@ namespace airbit {
 
 
 
-    /**
-    * Calibrate the gyro
-    */
-    //% block
+  
 
     /**
     * Calibrate the gyro and accelerometer
     */
-    //% blockID=Calibrate Gyro / Acc
-    //% block="Calibrate the offsets for gyro and accelerometer"
-
-
-
     //% blockID=airbit_calibrate_gyro
     //% block="Calibrate Gyro/Acc"
     //% group='Control'
-
     export function IMU_gyro_calibrate() {
         gyroXcalibration = 0
         gyroYcalibration = 0
@@ -719,8 +689,6 @@ namespace airbit {
     //% blockID=airbit_stabilise_pid
     //% block="Stabilise PID"
     //% group='Control'
-
-
     export function stabilisePid() {
 
         rollDiff = roll - imuRoll
@@ -782,8 +750,7 @@ namespace airbit {
     /**
      * Frame rate of pid loop
      */
-    //% block
-
+    //% block"FPS"
     export function fps() {
 
         return Math.round(1000 / looptime)
@@ -814,10 +781,7 @@ namespace airbit {
      * @param s describe parameter here, eg: "Hello"
      * @param e describe parameter here
      */
-    //% block
-
-    
-
+    //% block"PCA κατάσταση ανάγωνσης"
     export function PCA_ReadMode1() {
         pins.i2cWriteNumber(
             PCA_REG_SLAVEADR,
@@ -829,6 +793,21 @@ namespace airbit {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -870,15 +849,12 @@ enum TurnDirection {
 }
 
 
-
 enum ThrottleAction {
     //% block="Αύξηση"
     Increase,
     //% block="Μείωση"
     Decrease
 }
-
-
 
 
 //% weight=100 color=#00AEEF icon="\uf140" block="AirBit Ελληνικά"
@@ -909,9 +885,8 @@ namespace airbit2_GR {
     }
 
     /*
-    /**
+    /*
     * ΑΠΟΓΕΙΩΣΗ
-    
     //% block="Απογείωση στα %targetHeight εκατοστά"
     //% targetHeight.defl=100
     export function takeOff(targetHeight: number) {
@@ -920,20 +895,16 @@ namespace airbit2_GR {
         for (let i = 0; i <= 65; i++) {
             throttle = i
             basic.pause(30) 
-        }
-        
+        }  
         // 2. ΙΣΧΥΡΗ ΩΘΗΣΗ: Ανεβάζουμε στο 83 για να σιγουρέψουμε την άνοδο
         throttle = 83 
-        
         // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ: Αυξάνουμε τον πολλαπλασιαστή στο 30 για το 1 μέτρο
         let risingTime = targetHeight * 30 
         basic.pause(risingTime)
-        
         // 4. ΚΡΑΤΗΜΑ (Hover): ήταν 67 και το μεγάλωσαγια να μην πέσει
         throttle = 70 
         //basic.showIcon(IconNames.Yes)
     }
-
     */
 
 
@@ -964,7 +935,7 @@ namespace airbit2_GR {
         throttle = 84
 
         // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ
-        let risingTime = targetHeight * 30 
+        let risingTime = targetHeight * 25 
         basic.pause(risingTime)
         
         // 4. ΟΜΑΛΗ ΜΕΤΑΒΑΣΗ ΣΤΟ HOVER (Smooth Leveling)
@@ -985,12 +956,10 @@ namespace airbit2_GR {
         for (let j = throttle; j >= 50; j--) {
             throttle = j
             //airbit.MotorSpeed(throttle, throttle, throttle, throttle) // Ενημέρωση των μοτέρ
-            
             // Ο χρόνος παύσης προσαρμόζεται ώστε η κάθοδος να είναι ομαλή
             // Αν το ύψος είναι μεγάλο, η κάθοδος διαρκεί περισσότερο
             basic.pause(currentHeight * 2) 
         }
-
         // Απενεργοποίηση μοτέρ και arming
         arm = 0
         throttle = 0
@@ -1044,7 +1013,6 @@ namespace airbit2_GR {
 
     }
     
-
     //% block="Έλεγχος μπαταρίας <20% με ήχο"
     //% group='Διαρκής αποτίμηση'
     export function batteryAlarm() {
@@ -1152,11 +1120,10 @@ namespace airbit2_GR {
 
   
   
-
     /**
      * Στέλνει τα δεδομένα πτήσης και μπαταρίας στο τηλεχειριστήριο.
      */
-    //% block="Αποστολή Τηλεμετρίας στο χειριστήριο"
+    //% block="Αποστολή τηλεμετρίας στο χειριστήριο"
     //% group='Επικοινωνία'
     //% weight=80
     export function sendTelemetry() {
@@ -1183,7 +1150,7 @@ namespace airbit2_GR {
 
 
     //% block="Ποσοστό μπαταρίας %"
-    //% group='Συντήρηση'
+    //% group='Μπαταρία'
     export function bobaterypersent(): number {
         // Υπολογισμός ποσοστού: 3400mV = 0%, 4100mV = 100%
         let percent = Math.map(batterymVoltSmooth, 3400, 4100, 0, 100)
@@ -1191,14 +1158,14 @@ namespace airbit2_GR {
     }
 
     //% block="Επίπεδο μπαταρίας"
-    //% group='Συντήρηση'
+    //% group='Μπαταρία'
     export function batteryPercentage(): number {
         return airbit.batteryLevel()
     }
 
    
     //% block="milliVolts μπαταρίας"
-    //% group='Συντήρηση'
+    //% group='Μπαταρία'
     export function bobatterymVolt() {
         return Math.round(pins.analogReadPin(AnalogPin.P0) * BATTERY_FACTOR)
 
@@ -1266,6 +1233,7 @@ function servo1_test () {
     control.waitMicros(1500 + roll * 10)
     pins.digitalWritePin(DigitalPin.P1, 0)
 }
+
 function JoystickDeadBand () {
     if (Math.abs(roll) < 5) {
         roll = 0
@@ -1274,7 +1242,6 @@ function JoystickDeadBand () {
         pitch = 0
     }
 }
-
 
 function screen () {
     if (pins.analogReadPin(AnalogPin.P0) > 780) {
@@ -1333,7 +1300,6 @@ function screen () {
         }
     }
 }
-
 
 function mainLoop () {
     while (true) {
@@ -1460,6 +1426,7 @@ radio.onReceivedValue(function (name, value) {
         yaw += value * 0.1
     }
 })
+
 // smartBar(0, throttle)
 // smartBar(4, airbit.batteryLevel())
 function dots () {
@@ -1558,7 +1525,11 @@ function expo (inp: number) {
 
 
 
-/*
+
+
+
+
+/*--------------------ΧΩΡΙΣ BLOCKS------------------
 
 
 // Καλούμε την ελληνική αρχικοποίηση
