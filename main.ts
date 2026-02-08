@@ -922,7 +922,7 @@ namespace airbit2_GR {
     */
     //% block="Απογείωση στα %targetHeight εκατοστά"
     //% group='Πτήση'
-    //% targetHeight.defl=100
+    //% targetHeight.defl=50
     export function takeOff(targetHeight: number) {
         arm = 1
         
@@ -958,6 +958,7 @@ namespace airbit2_GR {
 
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
     //% group='Πτήση'
+    //% currentHeight.defl=50
     export function land(currentHeight: number) {
         // Ξεκινάμε από το τρέχον throttle και κατεβαίνουμε μέχρι το 50
         // Χρησιμοποιούμε την τρέχουσα τιμή της μεταβλητής throttle ως σημείο εκκίνησης
@@ -1095,7 +1096,7 @@ namespace airbit2_GR {
      */
     //% block="Πτήση %dir για %distance εκ."
     //% group='Πτήση'
-    //% distance.defl=50
+    //% distance.defl=30
     export function move(dir: MoveDirection, distance: number) {
         let ms = distance * 25; // Μετατροπή εκατοστών σε milliseconds
         
@@ -1123,7 +1124,8 @@ namespace airbit2_GR {
 
     //% block="Στρίψε %turnDir %degrees μοίρες"
     //% group='Πτήση'
-    //% degrees.min=0 degrees.max=360
+    //% degrees.min=0 degrees.defl=90 degrees.max=360
+
     export function turn(turnDir: TurnDirection, degrees: number) {
         let turn_ms = degrees * 5;
         if (turnDir == TurnDirection.Right) {
@@ -1154,6 +1156,7 @@ namespace airbit2_GR {
      */
     //% block="Οριζόντια πτήση σε τετράγωνο πλευράς %side εκ."
     //% group='Πτήση'
+    //% side.defl=20
     export function flySquare(side: number) {
         for (let i = 0; i < 4; i++) {
             move(MoveDirection.Forward, side)
