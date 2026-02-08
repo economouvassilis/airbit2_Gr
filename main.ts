@@ -886,6 +886,7 @@ enum ThrottleAction {
 namespace airbit2_GR {
 
     //% block="Αρχικοποίηση"
+    //% group="Μία φορά στην αρχή"
     export function initialize() {
         airbit.IMU_Start()
         basic.pause(100)
@@ -940,6 +941,7 @@ namespace airbit2_GR {
     */
     //% block="Απογείωση στα %targetHeight εκατοστά"
     //% targetHeight.defl=100
+    //% group="Πτήση"
     export function takeOff(targetHeight: number) {
         arm = 1
         
@@ -974,6 +976,7 @@ namespace airbit2_GR {
 
 
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
+    //% group="Πτήση"
     export function land(currentHeight: number) {
         // Ξεκινάμε από το τρέχον throttle και κατεβαίνουμε μέχρι το 50
         // Χρησιμοποιούμε την τρέχουσα τιμή της μεταβλητής throttle ως σημείο εκκίνησης
@@ -997,6 +1000,7 @@ namespace airbit2_GR {
      * Συγκεντρώνει τις εντολές: IMU_sensorRead, calculateAngles και stabilisePid.
      */
     //% block="Σταθεροποίηση"
+    //% group="Διαρκής αποτίμηση"
     export function stabilization() {
         // Διάβασμα αισθητήρων
         airbit.IMU_sensorRead()
@@ -1014,6 +1018,7 @@ namespace airbit2_GR {
      * @param speed Η επιθυμητή ταχύτητα από 0 έως 100
      */
     //% block="Όρισε ταχύτητα σε %speed"
+    //% group="Πτήση"
     //% speed.min=0 speed.max=100
     export function targetThrottle(speed: number) {
         // Θέτουμε τη μεταβλητή throttle απευθείας στην τιμή που θέλουμε
@@ -1028,6 +1033,7 @@ namespace airbit2_GR {
      * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
      */
     //% block="Ταχύτητα %action κατά %amount"
+    //% group="Πτήση"
     //% amount.min=0 amount.max=100
     export function setThrottle(action: ThrottleAction, amount: number) {
         if (action == ThrottleAction.Increase) {
@@ -1052,12 +1058,14 @@ namespace airbit2_GR {
      * Επιστρέφει την τιμή της μεταβλητής throttle που χρησιμοποιείται στο main.ts
      */
     //% block="Τρέχουσα ταχύτητα"
+    //% group="Πληροφόρηση"
     export function getCurrentThrottle(): number {
         return throttle
     }
 
 
     //% block="Κινήσου %dir για %distance εκατοστά"
+    //% group="Πτήση"
     //% distance.defl=50
     export function move(dir: MoveDirection, distance: number) {
         let ms = distance * 25;
@@ -1076,6 +1084,7 @@ namespace airbit2_GR {
     }
 
     //% block="Στρίψε %turnDir %degrees μοίρες"
+    //% group="Πτήση"
     //% degrees.min=0 degrees.max=360
     export function turn(turnDir: TurnDirection, degrees: number) {
         let turn_ms = degrees * 5;
@@ -1088,6 +1097,7 @@ namespace airbit2_GR {
     }
 
     //% block="Προβολή Πληροφοριών"
+    //% group="Διαρκής αποτίμηση"
     export function showInfo() {
         basic.clearScreen()
         airbit.smartBar(4, airbit.batteryLevel())
@@ -1099,6 +1109,7 @@ namespace airbit2_GR {
     
 
     //% block="Έλεγχος χαμηλής μπαταρίας με ηχητική προειδοποίηση"
+    //% group="Ελεγχοι"
     export function batteryAlarm() {
         let level = airbit.batteryLevel()
         // Αν το drone είναι οπλισμένο (πετάει) και η μπαταρία είναι κάτω από 20%
@@ -1106,8 +1117,8 @@ namespace airbit2_GR {
             music.setVolume(255)
             music.playTone(Note.C, music.beat(BeatFraction.Quarter))
             music.playTone(Note.G, music.beat(BeatFraction.Quarter))
+        }
     }
-}
 
 
     /**
@@ -1129,6 +1140,7 @@ namespace airbit2_GR {
     }
 
     //% block="Ενημέρωση ισχύος μοτέρ"
+    //% group="Διαρκής αποτίμηση"
     export function updateMotors() {
         if (arm && stable) {
             airbit.MotorSpeed(motorA, motorB, motorC, motorD)
@@ -1174,14 +1186,13 @@ namespace airbit2_GR {
         return airbit.batteryLevel()
     }
 
-}
-
-
-
-
 
 
 }
+
+
+
+
 
 
 
