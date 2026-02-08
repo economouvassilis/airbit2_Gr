@@ -905,42 +905,63 @@ namespace airbit2_GR {
 
 
     /**
-    * ΑΠΟΓΕΙΩΣΗ
+    * ΑΠΟΓΕΙΩΣΗ - Ομαλή έκδοση
     */
     //% block="Απογείωση στα %targetHeight εκατοστά"
     //% targetHeight.defl=100
     export function takeOff(targetHeight: number) {
         arm = 1
-        // 1. Σταδιακή άνοδος μέχρι το σημείο αποκόλλησης
+        
+        // 1. ΣΤΑΔΙΑΚΗ ΑΝΟΔΟΣ (Soft Start)
+        // Ανεβαίνουμε ομαλά μέχρι το σημείο που το drone ετοιμάζεται να σηκωθεί
         for (let i = 0; i <= 65; i++) {
             throttle = i
+            airbit.MotorSpeed(throttle, throttle, throttle, throttle)
             basic.pause(30) 
         }
         
-        // 2. ΙΣΧΥΡΗ ΩΘΗΣΗ: Ανεβάζουμε στο 83 για να σιγουρέψουμε την άνοδο
-        throttle = 83 
+        // 2. ΟΜΑΛΗ ΩΘΗΣΗ (Transition to Climb)
+        // Αντί για throttle = 83, ανεβαίνουμε σταδιακά για να μην "κλωτσήσει"
+        for (let i = 66; i <= 83; i++) {
+            throttle = i
+            airbit.MotorSpeed(throttle, throttle, throttle, throttle)
+            basic.pause(20) // Γρήγορη αλλά ομαλή αύξηση
+        }
         
-        // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ: Αυξάνουμε τον πολλαπλασιαστή στο 30 για το 1 μέτρο
-        let risingTime = targetHeight * 30 
+        // 3. ΧΡΟΝΟΣ ΑΝΟΔΟΥ
+        let risingTime = targetHeight * 28 
         basic.pause(risingTime)
         
-        // 4. ΚΡΑΤΗΜΑ (Hover): ήταν 67 και το μεγάλωσαγια να μην πέσει
-        throttle = 70 
-        basic.showIcon(IconNames.Yes)
+        // 4. ΟΜΑΛΗ ΜΕΤΑΒΑΣΗ ΣΤΟ HOVER (Smooth Leveling)
+        // Κατεβάζουμε σιγά-σιγά από το 83 στο 70 (hover) 
+        // για να μην "βουτήξει" το drone μόλις φτάσει στο ύψος στόχο
+        for (let i = 83; i >= 70; i--) {
+            throttle = i
+            airbit.MotorSpeed(throttle, throttle, throttle, throttle)
+            basic.pause(40) // Δίνουμε χρόνο στους έλικες να σταθεροποιηθούν
+        }
     }
+
 
 
     //% block="Προσγείωση από τα %currentHeight εκατοστά"
     export function land(currentHeight: number) {
-        // Κατεβαίνουμε σταδιακά από το hover (66) στο 50
-        for (let j = 68; j >= 50; j--) {
+        // Ξεκινάμε από το τρέχον throttle και κατεβαίνουμε μέχρι το 50
+        // Χρησιμοποιούμε την τρέχουσα τιμή της μεταβλητής throttle ως σημείο εκκίνησης
+        for (let j = throttle; j >= 50; j--) {
             throttle = j
-            basic.pause(currentHeight * 2) // Χρόνος καθόδου ανάλογα με το ύψος
+            airbit.MotorSpeed(throttle, throttle, throttle, throttle) // Ενημέρωση των μοτέρ
+            
+            // Ο χρόνος παύσης προσαρμόζεται ώστε η κάθοδος να είναι ομαλή
+            // Αν το ύψος είναι μεγάλο, η κάθοδος διαρκεί περισσότερο
+            basic.pause(currentHeight * 2) 
         }
-        arm = 0
-        airbit.MotorSpeed(0, 0, 0, 0)
-    }   
 
+        // Απενεργοποίηση μοτέρ και arming
+        arm = 0
+        throttle = 0
+        airbit.MotorSpeed(0, 0, 0, 0)
+    }
 
     /**
      * Εκτελεί όλες τις απαραίτητες μετρήσεις και υπολογισμούς για να μείνει το drone σταθερό.
@@ -974,7 +995,7 @@ namespace airbit2_GR {
     }
 
 
-/**
+    /**
      * Αυξάνει ή μειώνει την ισχύ των μοτέρ (ταχύτητα).
      */
     //% block="Ταχύτητα %action κατά %amount"
@@ -1005,7 +1026,6 @@ namespace airbit2_GR {
     export function getCurrentThrottle(): number {
         return throttle
     }
-
 
 
     //% block="Κινήσου %dir για %distance εκατοστά"
